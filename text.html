@@ -1,69 +1,69 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Text Styling</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<link type="text/css" href="styles.css" rel="Stylesheet"/>
-</head>
-<body>
-	<h1>tar</h1>
-	
-	<p>将 foo 和 bar 两个文件打包为一个名字为 archive.tar 的文件</p>
+  <head>
+    <title>Text Styling</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link type="text/css" href="styles.css" rel="Stylesheet"/>
+  </head>
+  <body>
+    <h1>tar</h1>
 
-<pre>
+    <p>将 foo 和 bar 两个文件打包为一个名字为 archive.tar 的文件</p>
+
+    <pre>
     $ tar -cf archive.tar foo bar
     # -c, --create
-</pre>
+    </pre>
 
-<p>将 notes/ 目录下的所有文件打包为一个名字为 notes.tar 的文件并以 gzip 方式压缩</p>
+    <p>将 notes/ 目录下的所有文件打包为一个名字为 notes.tar 的文件并以 gzip 方式压缩</p>
 
-<pre>
+    <pre>
     $ tar -zcf notes.tar.gz notes/  
     # -z, --gzip, --gunzip, --ungzip
-</pre>
+    </pre>
 
-<p>以简单格式列出 archive.tar 归档文件中的所有文件</p>
+    <p>以简单格式列出 archive.tar 归档文件中的所有文件</p>
 
-<pre>
+    <pre>
     $ tar -tf archive.tar    
     # -t, --list
-</pre>
+    </pre>
 
-<p>详细列出 archive.tar 归档文件中的所有文件</p>
+    <p>详细列出 archive.tar 归档文件中的所有文件</p>
 
-<pre>
+    <pre>
     $ tar -tvf archive.tar  
     # -v, --verbose
-</pre>
+    </pre>
 
-<p>将 archive.tar 中的所有内容抽取至当前目录</p>
+    <p>将 archive.tar 中的所有内容抽取至当前目录</p>
 
-<pre>
+    <pre>
     $ tar -xf archive.tar  
     # -x, --extract, --get
     $ tar -xvf archive.tar
-</pre>
+    </pre>
 
-<p>删除上面命令拆包出来的所有文件</p>
+    <p>删除上面命令拆包出来的所有文件</p>
 
-<pre>
+    <pre>
     $ tar -tf archive.tar | xargs rm
-</pre>
+    </pre>
 
-<p>向 archive.tar 中添加文件或目录</p>
+    <p>向 archive.tar 中添加文件或目录</p>
 
-<pre>
+    <pre>
     $ tar -rf archive.tar test/  
     # -r, --append
     $ tar -rvf archive.tar test/
-</pre>
+    </pre>
 
-<p>从 archive.tar 中抽取文件或目录</p>
+    <p>从 archive.tar 中抽取文件或目录</p>
 
-<pre>
+    <pre>
     $ tar -xf archive.tar test/
     $ tar -xvf archive.tar test/
-</pre>
+    </pre>
 
-</body>
+  </body>
 </html>
