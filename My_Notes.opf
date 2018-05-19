@@ -14,18 +14,16 @@
 	</metadata>
 	<manifest>
 		<item id="content" media-type="text/x-oeb1-document" href="toc.html"></item>
-		<item id="text" media-type="text/x-oeb1-document" href="text.html"></item>
-		<item id="Images" media-type="text/x-oeb1-document" href="Images.html"></item>
-		<item id="background" media-type="text/x-oeb1-document" href="background.html"></item>
+		<item id="linux" media-type="text/x-oeb1-document" href="linux.html"></item>
+		<item id="css" media-type="text/x-oeb1-document" href="css.html"></item>
 	</manifest>
 	<spine toc="ncx">
 		<itemref idref="content"/>
-		<itemref idref="text"/>
-		<itemref idref="Images"/>
-		<itemref idref="background"/>
+		<itemref idref="linux"/>
+		<itemref idref="css"/>
 	</spine>
 	<guide>
 		<reference type="toc" title="Table of Contents" href="toc.html"/>
-		<reference type="text" title="Book" href="text.html"/>
+		<reference type="text" title="Book" href="linux.html"/>
 	</guide>
 </package>
