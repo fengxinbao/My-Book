@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package unique-identifier="uid" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:asd="http://www.idpf.org/asdfaf">
-	<metadata>
-		<dc-metadata  xmlns:dc="http://purl.org/metadata/dublin_core" xmlns:oebpackage="http://openebook.org/namespaces/oeb-package/1.0/">
-			<dc:Title>My Notes</dc:Title>
-			<dc:Language>en</dc:Language>
-			<dc:Creator>fengxinbao</dc:Creator>
-			<dc:Copyrights>fengxinbao</dc:Copyrights>
-			<dc:Publisher>fengxinbao</dc:Publisher>
-			<x-metadata>
-				<EmbeddedCover>images/cover.jpg</EmbeddedCover>
-			</x-metadata>
-		</dc-metadata>
-	</metadata>
-	<manifest>
-		<item id="content" media-type="text/x-oeb1-document" href="toc.html"></item>
-		<item id="linux" media-type="text/x-oeb1-document" href="linux.html"></item>
-		<item id="css" media-type="text/x-oeb1-document" href="css.html"></item>
-	</manifest>
-	<spine toc="ncx">
-		<itemref idref="content"/>
-		<itemref idref="linux"/>
-		<itemref idref="css"/>
-	</spine>
-	<guide>
-		<reference type="toc" title="Table of Contents" href="toc.html"/>
-		<reference type="text" title="Book" href="linux.html"/>
-	</guide>
+  <metadata>
+    <dc-metadata  xmlns:dc="http://purl.org/metadata/dublin_core" xmlns:oebpackage="http://openebook.org/namespaces/oeb-package/1.0/">
+      <dc:Title>My Notes</dc:Title>
+      <dc:Language>en</dc:Language>
+      <dc:Creator>fengxinbao</dc:Creator>
+      <dc:Copyrights>fengxinbao</dc:Copyrights>
+      <dc:Publisher>fengxinbao</dc:Publisher>
+      <x-metadata>
+	<EmbeddedCover>images/cover.jpg</EmbeddedCover>
+      </x-metadata>
+    </dc-metadata>
+  </metadata>
+  <manifest>
+    <item id="content" media-type="text/x-oeb1-document" href="toc.html"></item>
+    <item id="command_line_tools" media-type="text/x-oeb1-document" href="learn_linux/command_line_tools.html"></item>
+    <item id="command_line_skills" media-type="text/x-oeb1-document" href="learn_linux/command_line_skills.html"></item>
+    <item id="vim_skills" media-type="text/x-oeb1-document" href="learn_linux/vim_skills.html"></item>
+    <item id="css" media-type="text/x-oeb1-document" href="learn_css/css.html"></item>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="content"/>
+    <itemref idref="command_line_tools"/>
+    <itemref idref="command_line_skills"/>
+    <itemref idref="vim_skills"/>
+    <itemref idref="css"/>
+  </spine>
+  <guide>
+    <reference type="toc" title="Table of Contents" href="toc.html"/>
+    <reference type="text" title="Book" href="learn_linux/command_line_tools.html"/>
+  </guide>
 </package>
