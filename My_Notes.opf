@@ -20,7 +20,8 @@
     <item id="vim_pratical_skills" media-type="text/x-oeb1-document" href="contents/vim_pratical_skills.html"></item>
     <item id="vim_motion" media-type="text/x-oeb1-document" href="contents/vim_motion.html"></item>
     <item id="css" media-type="text/x-oeb1-document" href="contents/css.html"></item>
-    <item id="blogs" media-type="text/x-oeb1-document" href="contents/blog_block_chain.html"></item>
+    <item id="blogs_block_chain" media-type="text/x-oeb1-document" href="contents/blog_block_chain.html"></item>
+    <item id="blogs_wooin" media-type="text/x-oeb1-document" href="contents/blog_wooin.html"></item>
   </manifest>
   <spine toc="ncx">
     <itemref idref="content"/>
@@ -30,7 +31,8 @@
     <itemref idref="vim_pratical_skills"/>
     <itemref idref="vim_motion"/>
     <itemref idref="css"/>
-    <itemref idref="blogs"/>
+    <itemref idref="blogs_block_chain"/>
+  <itemref idref="blogs_wooin"/>
   </spine>
   <guide>
     <reference type="toc" title="Table of Contents" href="toc.html"/>
