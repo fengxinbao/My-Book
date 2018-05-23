@@ -15,18 +15,22 @@
   <manifest>
     <item id="content" media-type="text/x-oeb1-document" href="toc.html"></item>
     <item id="linux_tools" media-type="text/x-oeb1-document" href="contents/linux_tools.html"></item>
-    <item id="linux_skills" media-type="text/x-oeb1-document" href="contents/linux_skills.html"></item>
-    <item id="linux_vim_skills" media-type="text/x-oeb1-document" href="contents/linux_vim_skills.html"></item>
-    <item id="linux_vim_pratical_skills" media-type="text/x-oeb1-document" href="contents/linux_vim_pratical_skills.html"></item>
+    <item id="linux_tips" media-type="text/x-oeb1-document" href="contents/linux_tips.html"></item>
+    <item id="vim_tips" media-type="text/x-oeb1-document" href="contents/vim_tips.html"></item>
+    <item id="vim_pratical_skills" media-type="text/x-oeb1-document" href="contents/vim_pratical_skills.html"></item>
+    <item id="vim_motion" media-type="text/x-oeb1-document" href="contents/vim_motion.html"></item>
     <item id="css" media-type="text/x-oeb1-document" href="contents/css.html"></item>
+    <item id="blogs" media-type="text/x-oeb1-document" href="contents/blog_block_chain.html"></item>
   </manifest>
   <spine toc="ncx">
     <itemref idref="content"/>
     <itemref idref="linux_tools"/>
-    <itemref idref="linux_skills"/>
-    <itemref idref="linux_vim_skills"/>
-    <itemref idref="linux_vim_pratical_skills"/>
+    <itemref idref="linux_tips"/>
+    <itemref idref="vim_tips"/>
+    <itemref idref="vim_pratical_skills"/>
+    <itemref idref="vim_motion"/>
     <itemref idref="css"/>
+    <itemref idref="blogs"/>
   </spine>
   <guide>
     <reference type="toc" title="Table of Contents" href="toc.html"/>

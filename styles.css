@@ -1,4 +1,13 @@
-
+table {
+  /* border-left: 0.5px solid #000; */
+  /* border-top: 0.5px solid #000; */
+  border-collapse: collapse;
+}
+table, td, th {
+  /* border-right: 0.5px solid #000; */
+  /* border-bottom: 0.5px solid #000; */
+  border: 0.5px solid #000;
+}
 /* Key words in the text are made bold italic */
 .key
 {
