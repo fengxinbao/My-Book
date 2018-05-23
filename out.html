@@ -1,0 +1,37 @@
+<h1 id="cat">cat</h1>
+<p><strong>只显示包含某些字符的行</strong></p>
+<pre><code>cat filename | grep &quot;regex&quot;</code></pre>
+<p>例如，显示 file_list 中以 maven 开头的行</p>
+<pre><code>cat file_list | grep &quot;^maven&quot;</code></pre>
+<h1 id="tree">tree</h1>
+<p>以树形结构显示目录结构</p>
+<pre><code>$ apt-get install tree
+$ tree -L 5 src/</code></pre>
+<p><strong>在命令行中创建和使用一个变量</strong></p>
+<pre><code>$ p=`pwd`
+$ cd
+$ mv Gradle $p </code></pre>
+<h1 id="安装-gradle">安装 Gradle</h1>
+<p>解压 gradle-4.7-bin.zip</p>
+<pre><code>sudo unzip -d /opt/gradle/ gradle-4.7-bin.zip</code></pre>
+<p>将 Gradle 的 bin 目录添加至环境变量</p>
+<pre><code>$ export PATH=$PATH:/opt/gradle/gradle-4.7/bin</code></pre>
+<p>查看 Gradle 是否安装成功</p>
+<pre><code>$ gradle -v</code></pre>
+<p><strong>列编辑</strong></p>
+<p>删除</p>
+<ol style="list-style-type: decimal">
+<li>光标定位到开始操作的地方</li>
+<li><code>Ctrl + v</code> 进入“可视块”模式</li>
+<li>选取要操作的列</li>
+<li>用 <code>d</code> 删除</li>
+</ol>
+<p>插入: 假设我们在每一行前都插入<code>#</code>：</p>
+<ol style="list-style-type: decimal">
+<li>光标定位到开始操作的地方</li>
+<li><code>Ctrl + v</code> 进入“可视块”模式</li>
+<li>选取要操作的列</li>
+<li><code>Shift + I</code></li>
+<li>输入要插入的内容。</li>
+<li><code>&lt;ESC&gt;</code> 按两次，会在每行的选定区域出现插入的内容</li>
+</ol>

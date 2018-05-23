@@ -14,20 +14,22 @@
   </metadata>
   <manifest>
     <item id="content" media-type="text/x-oeb1-document" href="toc.html"></item>
-    <item id="command_line_tools" media-type="text/x-oeb1-document" href="learn_linux/command_line_tools.html"></item>
-    <item id="command_line_skills" media-type="text/x-oeb1-document" href="learn_linux/command_line_skills.html"></item>
-    <item id="vim_skills" media-type="text/x-oeb1-document" href="learn_linux/vim_skills.html"></item>
-    <item id="css" media-type="text/x-oeb1-document" href="learn_css/css.html"></item>
+    <item id="linux_tools" media-type="text/x-oeb1-document" href="contents/linux_tools.html"></item>
+    <item id="linux_skills" media-type="text/x-oeb1-document" href="contents/linux_skills.html"></item>
+    <item id="linux_vim_skills" media-type="text/x-oeb1-document" href="contents/linux_vim_skills.html"></item>
+    <item id="linux_vim_pratical_skills" media-type="text/x-oeb1-document" href="contents/linux_vim_pratical_skills.html"></item>
+    <item id="css" media-type="text/x-oeb1-document" href="contents/css.html"></item>
   </manifest>
   <spine toc="ncx">
     <itemref idref="content"/>
-    <itemref idref="command_line_tools"/>
-    <itemref idref="command_line_skills"/>
-    <itemref idref="vim_skills"/>
+    <itemref idref="linux_tools"/>
+    <itemref idref="linux_skills"/>
+    <itemref idref="linux_vim_skills"/>
+    <itemref idref="linux_vim_pratical_skills"/>
     <itemref idref="css"/>
   </spine>
   <guide>
     <reference type="toc" title="Table of Contents" href="toc.html"/>
-    <reference type="text" title="Book" href="learn_linux/command_line_tools.html"/>
+    <reference type="text" title="Book" href="contents/linux_tools.html"/>
   </guide>
 </package>

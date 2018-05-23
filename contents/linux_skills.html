@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link type="text/css" href="../styles.css" rel="Stylesheet" />
+  </head>
+  <body>
+
+      <h1>Command Line Skills</h1>
+
+      <p><strong>Run a program in the background</strong></p>
+      <pre><code>firefox deom.html &amp;</code></pre>
+
+      <p><strong>Set the Environment Variables</strong></p>
+      <p>Append this line</p>
+      <pre><code>export PATH=/path/to/the/bin/directory:$PATH</code></pre>
+      <p>to the end of the file <code>~/.bashrc</code><p>
+
+      <p><strong>在命令行中创建和使用一个变量</strong></p>
+      <pre><code>$ p=`pwd`
+$ cd
+$ mv Gradle $p </code></pre>
+
+      <p><strong>安装 Gradle</strong></p>
+      <p>解压 gradle-4.7-bin.zip</p>
+      <pre><code>sudo unzip -d /opt/gradle/ gradle-4.7-bin.zip</code></pre>
+      <p>将 Gradle 的 bin 目录添加至环境变量</p>
+      <pre><code>$ export PATH=$PATH:/opt/gradle/gradle-4.7/bin</code></pre>
+      <p>查看 Gradle 是否安装成功</p>
+      <pre><code>$ gradle -v</code></pre>
+  </body>
+</html>

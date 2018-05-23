@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link type="text/css" href="../styles.css" rel="Stylesheet" />
+  </head>
+  <body>
+
+      <h1 id="">Vim Skills</h1>
+
+      <p><strong>Exchange two letters in normal mode</strong></p>
+      <pre><code>xp</code></pre>
+
+      <p><strong>Exchange two lines in normal mode</strong></p>
+      <pre><code>ddp</code></pre>
+
+      <p><strong>Insert an empty line in normal mode</strong></p>
+      <ol style="list-style-type: decimal">
+	<li>Move the cursor to an empty line, <code>yy</code>.</li>
+	<li>Move the cursor to the target postion, <code>p</code>.</li>
+      </ol>
+
+      <p><strong>INSERT the start/end of the line</strong></p>
+      <p><code>I / A</code></p>
+      
+
+      <p><strong>列编辑</strong></p>
+      <p>删除</p>
+      <ol style="list-style-type: decimal">
+	<li>光标定位到开始操作的地方</li>
+	<li><code>Ctrl + v</code> 进入“可视块”模式</li>
+	<li>选取要操作的列</li>
+	<li>用 <code>d</code> 删除</li>
+      </ol>
+      <p>插入: 假设我们在每一行前都插入<code>#</code>：</p>
+      <ol style="list-style-type: decimal">
+	<li>光标定位到开始操作的地方</li>
+	<li><code>Ctrl + v</code> 进入“可视块”模式</li>
+	<li>选取要操作的列</li>
+	<li><code>Shift + I</code></li>
+	<li>输入要插入的内容。</li>
+	<li><code>&lt;ESC&gt;</code> 按两次，会在每行的选定区域出现插入的内容</li>
+      </ol>
+  </body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link type="text/css" href="../styles.css" rel="Stylesheet" />
+  </head>
+  <body>
+    
+      <h1 id="ch01">第 01 章 VIM解决问题的方式：用一键移动，另一键执行</h1>
+      <p><strong>. 命令是做什么的？</strong></p>
+      <p><code>.</code> 命令是一个微型的宏，它会重复“上次的修改”。</p>
+      <p><strong>什么是修改？</strong></p>
+      <p>修改分为两种：</p>
+      <ul>
+	<li>普通模式下执行一次命令，如 <code>x</code>、<code>dd</code> 及 <code>&gt;</code> 等算作一次修改；</li>
+	<li>而从进入插入模式起（<code>a</code>、<code>i</code>、<code>A</code>、<code>o</code>、<code>O</code>），直到返回普通模式为止（<code>&lt;Esc&gt;</code>），这一连串的操作也算作一次修改。</li>
+      </ul>
+      <p>使用 <code>.</code> 命令，它会重新执行上一次的修改。</p>
+
+      <h2 id="问题-1减少重复-重复在行尾添加内容">问题 1：减少重复 | 重复在行尾添加内容</h2>
+      <p>为如下程序中每条语句结尾添加分号</p>
+      <pre><code>var foo = 1
+var bar = &#39;a&#39;
+var foobar = foo + bar</code></pre>
+      <p>变成</p>
+      <pre><code>var foo = 1;
+var bar = &#39;a&#39;;
+var foobar = foo + bar;</code></pre>
+      <p><strong>解答：</strong> 光标首先移动到第一行任意位置，</p>
+      <ul>
+	<li><code>A</code> 移动光标至语句结尾，并进入插入模式</li>
+	<li><code>;</code> 插入分号</li>
+	<li><code>&lt;Esc&gt;</code> 返回普通模式</li>
+	<li><code>j.</code> 移动光标到下一行，并重复执行上一次的修改</li>
+      </ul>
+
+      <h2 id="问题-2以退为进-重复给某个字符前后添加一个空格">问题 2：以退为进 | 重复给某个字符前后添加一个空格</h2>
+      <p>给下列语句中的加号（+）前后各添加一个空格：</p>
+      <pre><code>var foo = &quot;method(&quot;+argument1+&quot;,&quot;+argument2+&quot;)&quot;;</code></pre>
+      <p>变成</p>
+      <pre><code>var foo = &quot;method(&quot; + argument1 + &quot;,&quot; + argument2 + &quot;)&quot;;</code></pre>
+      <p><strong>解答：</strong></p>
+      <p>假设光标位于第一个加号之前</p>
+      <ul>
+	<li><code>f+</code> 查找并移动到当前行的<code>+</code>号处</li>
+	<li><code>s</code> 删除光标下的字符，然后进入插入模式</li>
+	<li>插入空格</li>
+	<li><code>+</code> 插入加号</li>
+	<li>插入空格</li>
+	<li><code>&lt;Esc&gt;</code></li>
+	<li><code>;</code> 重复 <code>f+</code> 命令</li>
+	<li><code>.</code> 重复上一次修改</li>
+      </ul>
+
+      <h2 id="问题-3关于重复及回退">问题 3：关于重复及回退</h2>
+      <p>如何在行内查找下一个字符？如何重复它？如何回退它？</p>
+      <pre><code>f{char}    /    t{char} ; ,</code></pre>
+      <p>如何在行内查找上一个字符？如何重复它？如何回退它？</p>
+      <pre><code>F{char}    /    T{char} ; ,</code></pre>
+      <p>如何在文档中查找下一匹配项？如何重复它？如何回退它？</p>
+      <pre><code>/pattern    n    N</code></pre>
+      <p>如何在文档中查找上一匹配项？如何重复它？如何回退它？</p>
+      <pre><code>?pattern    n    N</code></pre>
+      <p>如何替换<strong>当前行</strong>文本？如何重复它？如何回退它？</p>
+      <pre><code>:s/target/replacement    &amp;    u</code></pre>
+
+      <h2 id="问题-4如何重复查找指定文本并手动替换">问题 4：如何重复查找指定文本并手动替换</h2>
+      <p>当然可以执行全局替换：</p>
+      <pre><code>:%s/pattern/replacement</code></pre>
+      <p>但有些时候需要在替换前进行确认是否执行替换。例如以下文本：</p>
+      <pre><code>We&#39;re waiting for content before the site can go live.
+If you are content with this, let&#39;s go ahead with it.
+We&#39;ll launch as soon as we have the content.</code></pre>
+      <p>我们想把 content 用 copy 代替，但 content 还有 happy 的含义，所以不是所有 content 都能替换为 copy，替换前需要确认。</p>
+      <p><strong>解答：</strong></p>
+      <ol style="list-style-type: decimal">
+	<li>使用 <code>/pattern</code> 或 <code>*</code> 来查找目标单词 content.</li>
+	<li>此时光标位于单词 content 的首字母 c 的位置。</li>
+	<li><code>cw</code>（删除光标位置到单词结尾之间的字符，并进入插入模式）</li>
+	<li>输入单词 copy</li>
+	<li><code>&lt;Esc&gt;</code></li>
+	<li><code>n</code>（查找下一个 content）</li>
+	<li><code>.</code>（重复上一次修改操作，即步骤 2 - 4，不含步骤 1）</li>
+      </ol>
+
+      <h2 id="问题-5以上技巧的共同点是什么">问题 5：以上技巧的共同点是什么？</h2>
+      <p>只需按一次键就能把光标移动到下一目标上。用一键移动，另一键执行。</p>
+      
+      <h1 id="ch02">第 02 章 普通模式</h1>
+      <p>普通模式是 Vim 的自然放松状态。</p>
+      <p>普通模式的强大，很大程度上源于它可以把操作符与动作命令结合在一起。</p>
+
+      <h2 id="技巧-7-停顿时请移开画笔">技巧 7 停顿时请移开画笔</h2>
+      <p>就像画家只花一小部分时间涂色一样，程序员也只花一小部分时间编写代码。绝大多数时间用来思考、阅读，以及在代码中穿梭浏览，而且当确实需要修改时，谁说一定要切换到插入模式才行？我们可以重新调整已有代码的格式，复制它们，移动其位置，或是删除它们。在普通模式中，我们有众多的工具可以利用。</p>
+
+      <h2 id="技巧-8-把撤销单元切成块">技巧 8 把撤销单元切成块</h2>
+      <p>撤销不一定是最后输入的词或字符，我们可以自己控制撤销的粒度。</p>
+      <p><code>u</code> 键用于撤销最新的修改。一次修改可以是：</p>
+      <ul>
+	<li>普通模式、可视模式、命令行模式中所出发的命令。</li>
+	<li><code>i{insert some text}&lt;Esc&gt;</code> 也是一次修改。</li>
+      </ul>
+      <p>只要控制好对 <code>&lt;Esc&gt;</code> 的使用，就可以撤销单词、句子或段落。那么多久离开一次插入模式呢？我喜欢每一个“可撤销块”对应一次思考过程。比如，我经常每一句话停顿一下，不管停顿时间有多短，都是一个自然的中断点，该退出插入模式。当我准备好继续写时，就按 <code>A</code> 命令继续。</p>
+      <p>在插入模式中，如果光标位于行尾，那么另起一行的最快方式是按 <code>&lt;CR&gt;</code>，但如果按 <code>&lt;Esc&gt;o</code>，那么在撤销时会更方便。</p>
+      <p>注意：如果在插入模式中使用上下左右箭头键移动光标，将会产生一个新的撤销块。因为这相当于先 <code>&lt;Esc&gt;</code>，然后用 <code>h</code>、<code>j</code>、<code>k</code>、<code>l</code> 移动光标，只不过没有退出插入模式。</p>
+
+      <h2 id="技巧-9-构造可重复的修改">技巧 9 构造可重复的修改</h2>
+      <p>当我们写下</p>
+      <pre><code>The end is nigh</code></pre>
+      <p>时，光标停留在字母 h 上。如果我们想删除 nigh，可以使用 daw（可以解读为 delete a word，作用是删除光标所在单词，不论光标位于该单词的哪个字母上），该命令不仅会删除单词 nigh，还会跟着删除一个空格，使光标最终停留在单词 is 的最后一个字符上。这样做的好处是，如果你想再删除单词 is，只需执行一次 <code>.</code> 命令。</p>
+
+      <h2 id="技巧-10-用次数做简单的算术">技巧 10 用次数做简单的算术</h2>
+      <p>将如下代码中的 0px 改为 -180px：</p>
+      <pre><code>.blog { background-position: 10px 10px }</code></pre>
+      <ul>
+	<li>使光标位于该行代码数字 10 或其之前的任意位置。</li>
+	<li><code>190&lt;C-x&gt;</code></li>
+      </ul>
+      <p>说明：</p>
+      <ul>
+	<li><code>&lt;C-x&gt;</code> 使光标所在数值减 1</li>
+	<li><code>&lt;C-a&gt;</code> 使光标所在数值加 1</li>
+      </ul>
+      <p><strong>问题：007 的后面是什么？</strong></p>
+      <p>Vim 把以 0 开头的数字解释为八进制值，所以 007 + 001 = 010。除非将</p>
+      <pre><code>set nrformats=</code></pre>
+      <p>加入 vimrc 里。</p>
+
+      <h2 id="技巧-11-能用重复就别用次数">技巧 11 能用重复，就别用次数</h2>
+      <p><code>cw</code> 的作用是，删除文本，直到下一个单词。所以：</p>
+      <ul>
+	<li>当光标位于空格上时，会删除该位置到下一个单词之前的所有空格，并进入插入模式。</li>
+	<li>当光标位于一个单词的某个字母上时，会删除那个字母直到该单词结尾的所有字母，不包括其后的任何空格，并进入插入模式。</li>
+      </ul>
+      <p><code>d2w</code>、<code>2dw</code> 与 <code>dw.</code> 三个命令是等效的。唯一的不同在于使用撤销命令 <code>u</code> 时效果不同。前两个会一次性恢复所删除的全部两个单词，最后一个每次只恢复一个被删除的单词。</p>
+
+      <h2 id="技巧-12-双剑合璧">技巧 12 双剑合璧</h2>
+      <p><strong>操作符 + 动作命令 = 操作</strong></p>
+      <p><code>d{motion}</code> 可以对一个字符（<code>dl</code>）、一个完整单词（<code>daw</code>）或一整个段落（<code>dap</code>）进行操作，其作用范围取决于动作命令 <code>{motion}</code>。<code>c{motion}</code>、<code>y{motion}</code> 以及其他一些命令也类似，它们统称为操作符（operator）。（可以用 <code>:h operator</code> 来查阅完整列表，使用 <code>:q</code> 退出查阅）</p>
+      <ul>
+	<li><code>dw</code>：删除光标位置直到下一个单词开头之间的文本及空格。</li>
+	<li><code>daw</code>：不论光标位于当前单词的哪个字符，都会删除当前单词即其后所有空格直到下一个单词。</li>
+      </ul>
+      <p><strong>Vim 操作符：</strong></p>
+      <ul>
+	<li><code>c</code> 修改</li>
+	<li><code>d</code> 删除</li>
+	<li><code>y</code> 复制到寄存器</li>
+	<li><code>g\~</code> 反转大小写</li>
+	<li><code>gu</code> 转换为小写</li>
+	<li><code>gU</code> 转换为大写</li>
+	<li><code>&gt;</code> 增加缩进</li>
+	<li><code>&lt;</code> 减小缩进</li>
+	<li><code>=</code> 自动缩进</li>
+	<li><code>!</code> 使用外部程序过滤{motion}所跨越的行</li>
+      </ul>
+      <p>Vim 语法有一条额外规则，即当一个操作符命令被连续调用两次时，它会作用于当前行。所以 <code>dd</code> 是删除当前行，<code>&gt;&gt;</code> 缩进当前行，<code>gUgU</code> 是当前行变大写，但也可以使用简化版的 <code>gUU</code>，同理，<code>g\~\~</code> 改变当前行大小写。</p>
+      <p>整篇文档变大写：<code>ggguG</code></p>
+      <ul>
+	<li><code>gg</code>：光标定位至文档开头第一个字符</li>
+	<li><code>gu</code>：变小写</li>
+	<li><code>G</code>：直到文档末尾最后一个字符</li>
+      </ul>
+
+      <h1 id="ch03">第 03 章 插入模式</h1>
+
+      <h2 id="技巧-13-在插入模式中及时更正错误">技巧 13 在插入模式中及时更正错误</h2>
+      <p>插入模式下：</p>
+      <ul>
+	<li><code>&lt;C-h&gt;</code> 删除前一个字符</li>
+	<li><code>&lt;C-w&gt;</code> 删除前一个单词</li>
+	<li><code>&lt;C-u&gt;</code> 删除至行首</li>
+      </ul>
+      <p>这些命令不是 Vim 插入模式独有的，在 bash shell 中也可以使用它们。</p>
+      <h2 id="技巧-14-插入-普通模式">技巧 14 插入-普通模式</h2>
+      <p><code>&lt;C-o&gt;</code> 可以带你进入“插入-普通模式”，在这个模式中，你可以执行一个普通模式的命令（不可是 Ctrl 组合键，可以是 <code>dd</code>、<code>daw</code>、<code>3k</code>、<code>j</code>、<code>yy</code>、<code>ZZ</code> 纯字母组合的命令），然后 Vim 会立刻返回到插入模式。</p>
+      <p><code>&lt;C-o&gt;zz</code> 当所编辑的行位于屏幕顶部或底部时，可以使用 <code>&lt;C-o&gt;</code>，然后结合 <code>zz</code> 命令，使当前行移动至屏幕中心，然后继续编辑。免去了退出返回普通模式，再进入插入模式的麻烦。</p>
+
+      <h2 id="技巧-15-不离开插入模式粘贴寄存器中的文本">技巧 15 不离开插入模式，粘贴寄存器中的文本</h2>
+      <p>下面是一段尚未完成的文本：</p>
+      <pre><code>Practical Vim, by Drew Neil
+Read Drew Neil’s</code></pre>
+      <p>我们想把书名插到最后一行，以补全该行。假设光标此时位于第一行首字母 P 的位置，那么：</p>
+      <ul>
+	<li><code>yt,</code></li>
+	<li><code>jA&lt;space&gt;</code></li>
+	<li><code>&lt;C-r&gt;0</code></li>
+	<li><code>.&lt;Esc&gt;</code></li>
+      </ul>
+      <p>得到：</p>
+      <pre><code>Practical Vim, by Drew Neil
+Read Drew Neil’s *Practical Vim.*</code></pre>
+  </body>
+</html>
