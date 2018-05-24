@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link type="text/css" href="../styles.css" rel="Stylesheet" />
+  </head>
+  <body>
+    <h1 id="vim_search_substitute">Vim 搜索和替换</h1>
+    <h2 id="一搜索">一、搜索 /</h2>
+    <p><strong>语法：</strong></p>
+    <pre><code>/regex</code></pre>
+    <table>
+      <thead>
+	<tr class="header">
+	  <th align="left">Character</th>
+	  <th align="left">Function</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr class="odd">
+	  <td align="left"><code>\&lt;</code></td>
+	  <td align="left">匹配单词词首</td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>\&gt;</code></td>
+	  <td align="left">匹配单词词尾</td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"><code>^</code></td>
+	  <td align="left">匹配行首</td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>$</code></td>
+	  <td align="left">匹配行尾</td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"></td>
+	  <td align="left"></td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>*</code></td>
+	  <td align="left">量词，匹配零个或多个</td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"><code>\+</code></td>
+	  <td align="left">量词，匹配一个或多个</td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>\?</code></td>
+	  <td align="left">量词，匹配零个或一个</td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"></td>
+	  <td align="left"></td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>.</code></td>
+	  <td align="left">匹配任意字符</td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"><code>\.</code></td>
+	  <td align="left">匹配 <code>.</code></td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>\*</code></td>
+	  <td align="left">匹配 <code>*</code></td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"><code>\/</code></td>
+	  <td align="left">匹配 <code>/</code></td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>\\</code></td>
+	  <td align="left">匹配 <code>\</code></td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"><code>\[</code></td>
+	  <td align="left">匹配 <code>[</code></td>
+	</tr>
+      </tbody>
+    </table>
+
+    <h2 id="二替换">二、替换</h2>
+    <p><strong>语法：</strong></p>
+    <pre><code>:s/regex/replacement/[options]</code></pre>
+    <ul>
+      <li><code>s</code> 表示替换。</li>
+      <li><code>g</code> 表示当前行所有匹配项。没有此选项时只替换第一个匹配项。</li>
+      <li><code>c</code> 表示替换前要确认。</li>
+    </ul>
+    <p><strong>替换 0 - 490 行所有单词两边的单引号为反引号：</strong></p>
+    <pre><code>0,490s/&#39;\(\w*\)&#39;/`1`/gc</code></pre>
+    <ul>
+      <li>可匹配 'a'，'a_3'，'' 等。</li>
+      <li><code>\w</code> 等于 <code>[0-9A-Za-z_]</code></li>
+    </ul>
+    <p><strong>替换整个文档中所有单词两边的双引号为反引号：</strong></p>
+    <pre><code>%s/&quot;\(\w*\)&quot;/`1`/gc</code></pre>
+    <p><strong>其他</strong></p>
+    <pre><code>%s/&quot;\(\S*\)&quot;/`1`/gc</code></pre>
+    <ul>
+      <li>可匹配 &quot;C-R&quot; 等。</li>
+    </ul>
+    <p><strong>分组</strong></p>
+    <p>使用 <code>\(</code> 和 <code>\)</code> 符号括起正规表达式，即可在后面使用 <code>\1</code>、<code>\2</code> 等变量来访问。</p>
+    <p>查找开头和结尾处a的个数相同的字符串，如 <code>aabbbaa</code>，<code>aaacccaaa</code>：</p>
+    <pre><code>/\(a\+\)[^a]\+\1</code></pre>
+    <h2 id="三与-perl-正则表达式的区别">三、与 Perl 正则表达式的区别</h2>
+    <table>
+      <thead>
+	<tr class="header">
+	  <th align="left">Vim语法</th>
+	  <th align="left">Perl语法</th>
+	  <th align="left">含义</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr class="odd">
+	  <td align="left"><code>\+</code></td>
+	  <td align="left"><code>+</code></td>
+	  <td align="left">1-任意个</td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>\?</code></td>
+	  <td align="left"><code>?</code></td>
+	  <td align="left">0-1个</td>
+	</tr>
+	<tr class="odd">
+	  <td align="left"><code>\{n,m}</code></td>
+	  <td align="left"><code>{n,m}</code></td>
+	  <td align="left">n-m个</td>
+	</tr>
+	<tr class="even">
+	  <td align="left"><code>\(</code> 和 <code>\)</code></td>
+	  <td align="left"><code>(</code> 和 <code>)</code></td>
+	  <td align="left">分组</td>
+	</tr>
+      </tbody>
+    </table>
+    <h2 id="四练习">四、练习</h2>
+    <p><strong>替换当前行第一个 vivian 为 sky</strong></p>
+    <pre><code>:s/vivian/sky/ </code></pre>
+    <p><strong>替换当前行所有 vivian 为 sky</strong></p>
+    <pre><code>:s/vivian/sky/g</code></pre>
+    <p><strong>替换第 n 行开始到最后一行中每一行的第一个 vivian 为 sky</strong></p>
+    <pre><code>:n,$s/vivian/sky/ </code></pre>
+    <p><strong>替换第 n 行开始到最后一行中每一行所有 vivian 为 sky</strong></p>
+    <pre><code>:n,$s/vivian/sky/g </code></pre>
+    <p>若 n 为点 <code>.</code>，表示从当前行开始到最后一行。</p>
+    <p><strong>替换整个文档每一行的第一个 vivian 为 sky</strong></p>
+    <pre><code>:%s/vivian/sky/</code></pre>
+    <p><strong>替换整个文档每一行中所有 vivian 为 sky</strong></p>
+    <pre><code>:%s/vivian/sky/g </code></pre>
+    <p><strong>替换当前行第一个 vivian/ 为 sky/</strong></p>
+    <p>(可以使用 <code>#</code> 作为分隔符，此时中间出现的 <code>/</code> 不会作为分隔符。)</p>
+    <pre><code>:s#vivian/#sky/# </code></pre>
+    <p><strong>使用 + 来替换 /，将/oradata/apras/ 替换成 /user01/apras1/</strong></p>
+    <pre><code>:%s+/oradata/apras/+/user01/apras1+</code></pre>
+  </body>
+</html>

@@ -1,0 +1,667 @@
+<h1 id="motion.txt">motion.txt</h1>
+<p>For Vim version 7.4. Last change: 2015 Jun 06</p>
+<p>General remarks:</p>
+<p>If you want to know where you are in the file use the <code>CTRL-G</code> command |CTRL-G| or the &quot;g CTRL-G&quot; command |g_CTRL-G|. If you set the <code>ruler</code> option, the cursor position is continuously shown in the status line (which slows down Vim a little).</p>
+<p>Experienced users prefer the <code>hjkl</code> keys because they are always right under their fingers. Beginners often prefer the arrow keys, because they do not know what the <code>hjkl</code> keys do. The mnemonic value of <code>hjkl</code> is clear from looking at the keyboard. Think of <code>j</code> as an arrow pointing downwards.</p>
+<p>The <code>virtualedit</code> option can be set to make it possible to move the cursor to positions where there is no character or halfway a character.</p>
+<h2 id="motions-and-operators">1. Motions and operators</h2>
+<p>The motion commands can be used after an operator command, to have the command operate on the text that was moved over. That is the text between the cursor position before and after the motion. Operators are generally used to delete or change text. The following operators are available:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">COMMANDS</th>
+<th align="left">FUNCTIOINS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>c</code></td>
+<td align="left">change</td>
+</tr>
+<tr class="even">
+<td align="left"><code>d</code></td>
+<td align="left">delete</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>y</code></td>
+<td align="left">yank into register (does not change the text)</td>
+</tr>
+<tr class="even">
+<td align="left"><code>~</code></td>
+<td align="left">swap case (only if <code>tildeop</code> is set)</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>g~</code></td>
+<td align="left">swap case</td>
+</tr>
+<tr class="even">
+<td align="left"><code>gu</code></td>
+<td align="left">make lowercase</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>gU</code></td>
+<td align="left">make uppercase</td>
+</tr>
+<tr class="even">
+<td align="left"><code>!</code></td>
+<td align="left">filter through an external program</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>=</code></td>
+<td align="left">filter through <code>equalprg</code> or C-indenting if empty</td>
+</tr>
+<tr class="even">
+<td align="left"><code>gq</code></td>
+<td align="left">text formatting</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>g?</code></td>
+<td align="left">ROT13 encoding</td>
+</tr>
+<tr class="even">
+<td align="left"><code>&gt;</code></td>
+<td align="left">shift right</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>&lt;</code></td>
+<td align="left">shift left</td>
+</tr>
+<tr class="even">
+<td align="left"><code>zf</code></td>
+<td align="left">define a fold</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>g@</code></td>
+<td align="left">call function set with the <code>operatorfunc</code> option</td>
+</tr>
+</tbody>
+</table>
+<p>If the motion includes a count and the operator also had a count before it, the two counts are multiplied. For example: <code>2d3w</code> deletes six words.</p>
+<p>After applying the operator the cursor is mostly left <strong>at the start of the text</strong> that was operated upon. For example, <code>yfe</code> doesn't move the cursor, but <code>yFe</code> moves the cursor leftwards to the <code>e</code> where the yank started.</p>
+<p>The operator either affects whole lines, or the characters between the start and end position. Generally, motions that move between lines affect lines (are linewise), and motions that move within a line affect characters (are characterwise). However, there are some exceptions.</p>
+<p>A character motion is either <strong>inclusive</strong> or <strong>exclusive</strong>. When inclusive, the start and end position of the motion are included in the operation. When exclusive, the last character towards the end of the buffer is not included. <strong>Linewise motions always include the start and end position.</strong></p>
+<p>Which motions are linewise, inclusive or exclusive is mentioned with the command. There are however, two general exceptions:</p>
+<ol style="list-style-type: decimal">
+<li><p>If the motion is exclusive and the end of the motion is in column 1, the end of the motion is moved to the end of the previous line and the motion becomes inclusive. Example: <code>}</code> moves to the first line after a paragraph, but <code>d}</code> will not include that line.</p></li>
+<li><p>If the motion is exclusive, the end of the motion is in column 1 and the start of the motion was at or before the first non-blank in the line, the motion becomes linewise. Example: If a paragraph begins with some blanks and you do <code>d}</code> while standing on the first non-blank, all the lines of the paragraph are deleted, including the blanks. If you do a put now, the deleted lines will be inserted below the cursor position.</p></li>
+</ol>
+<p>Note that when the operator is pending (the operator command is typed, but the motion isn't yet), a special set of mappings can be used. See |:omap|.</p>
+<p>Instead of first giving the operator and then a motion you can use Visual mode: mark the start of the text with <code>**v**</code>, move the cursor to the end of the text that is to be affected and then hit the operator. The text between the start and the cursor position is highlighted, so you can see what text will be operated upon. This allows much more freedom, but requires more key strokes and has limited redo functionality. See the chapter on Visual mode |Visual-mode|.</p>
+<p>You can use a <code>:</code> command for a motion. For example &quot;d:call FindEnd()&quot;. But this can't be repeated with <code>.</code> if the command is more than one line.</p>
+<p>This can be repeated:</p>
+<pre><code>d:call search(`f`)&lt;CR&gt;</code></pre>
+<p>This cannot be repeated:</p>
+<pre><code>d:if 1&lt;CR&gt;
+    call search(`f`)&lt;CR&gt;
+endif&lt;CR&gt;</code></pre>
+<p>Note that when using <code>:</code> any motion becomes characterwise exclusive.</p>
+<p><strong>FORCING A MOTION TO BE LINEWISE, CHARACTERWISE OR BLOCKWISE</strong></p>
+<p>When a motion is not of the type you would like to use, you can force another type by using <code>v</code>, <code>V</code> or CTRL-V just after the operator.</p>
+<p>Example: - <code>dj</code> deletes two lines - <code>dvj</code> deletes from the cursor position until the character below the cursor - <code>d&lt;C-V&gt;j</code> deletes the character under the cursor and the character below the cursor.</p>
+<p>Be careful with forcing a linewise movement to be used characterwise or blockwise, the column may not always be defined.</p>
+<p><code>v</code></p>
+<p>When used after an operator, before the motion command: Force the operator to work characterwise, also when the motion is linewise. If the motion was linewise, it will become |exclusive|. If the motion already was characterwise, toggle inclusive/exclusive. This can be used to make an exclusive motion inclusive and an inclusive motion exclusive.</p>
+<p><code>V</code></p>
+<p>When used after an operator, before the motion command: Force the operator to work linewise, also when the motion is characterwise.</p>
+<p><code>CTRL-V</code></p>
+<p>When used after an operator, before the motion command: Force the operator to work blockwise. This works like Visual block mode selection, with the corners defined by the cursor position before and after the motion.</p>
+<h2 id="left-right-motions">2. Left-right motions</h2>
+<p>These commands move the cursor to the specified column in the current line. They stop at the first column and at the end of the line, except <code>$</code>, which may move to one of the next lines. See <code>whichwrap</code> option to make some of the commands move across line boundaries.</p>
+<p><code>h</code> / <code>CTRL-H</code></p>
+<p>[count] characters to the left.</p>
+<p><code>l</code> / <code>&lt;Space&gt;</code></p>
+<p>[count] characters to the right.</p>
+<p><code>0</code></p>
+<p>To the first character of the line.</p>
+<p><code>&lt;Home&gt;</code></p>
+<p>To the first character of the line.</p>
+<p><code>^</code></p>
+<p>To the first non-blank character of the line.</p>
+<p><code>$</code> / <code>&lt;End&gt;</code></p>
+<p>To the end of the line. When a count is given also go [count - 1] lines downward |inclusive|.</p>
+<p><code>g_</code></p>
+<p>To the last non-blank character of the line and [count - 1] lines downward |inclusive|.</p>
+<p><code>g0</code> / <code>g&lt;Home&gt;</code></p>
+<p>When lines wrap (<code>wrap</code> on): To the first character of the <strong>screen line</strong>. Differs from <code>0</code> when a line is wider than the screen. When lines don't wrap (<code>wrap</code> off): To the leftmost character of the current line that is on the screen. Differs from <code>0</code> when the first character of the line is not on the screen.</p>
+<p><code>g^</code></p>
+<p>When lines wrap (<code>wrap</code> on): To the first non-blank character of the screen line. Differs from <code>^</code> when a line is wider than the screen. When lines don't wrap (<code>wrap</code> off): To the leftmost non-blank character of the current line that is on the screen. Differs from <code>^</code> when the first non-blank character of the line is not on the screen.</p>
+<p><code>gm</code></p>
+<p>Like <code>g0</code>, but half a screenwidth to the right (or as much as possible).</p>
+<p><code>g$</code> / <code>g&lt;End&gt;</code></p>
+<p>When lines wrap (<code>wrap</code> on): To the last character of the screen line and [count - 1] screen lines downward |inclusive|. Differs from <code>$</code> when a line is wider than the screen. When lines don't wrap (<code>wrap</code> off): To the rightmost character of the current line that is visible on the screen. Differs from <code>$</code> when the last character of the line is not on the screen or when a count is used. Additionally, vertical movements keep the column, instead of going to the end of the line. When <code>virtualedit</code> is enabled moves to the end of the screen line.</p>
+<p><code>|</code></p>
+<p>To screen column [count] in the current line. Ceci n'est pas une pipe.</p>
+<p><code>f{char}</code></p>
+<p>To [count]'th occurrence of {char} to the right. The cursor is placed on {char} |inclusive|. {char} can be entered as a digraph |digraph-arg|. When <code>encoding</code> is set to Unicode, composing characters may be used, see |utf-8-char-arg|. |:lmap| mappings apply to {char}. The CTRL-^ command in Insert mode can be used to switch this on/off |i_CTRL-^|.</p>
+<p><code>F{char}</code></p>
+<p>To the [count]'th occurrence of {char} to the left. The cursor is placed on {char} |exclusive|. {char} can be entered like with the |f| command.</p>
+<p><code>t{char}</code></p>
+<p>Till before [count]'th occurrence of {char} to the right. The cursor is placed on the character left of {char} |inclusive|. {char} can be entered like with the |f| command.</p>
+<p><code>T{char}</code></p>
+<p>Till after [count]'th occurrence of {char} to the left. The cursor is placed on the character right of {char} |exclusive|. {char} can be entered like with the |f| command.</p>
+<p><code>;</code></p>
+<p>Repeat latest <code>f</code>, <code>t</code>, <code>F</code> or <code>T</code> [count] times. See |cpo-;|</p>
+<p><code>,</code></p>
+<p>Repeat latest <code>f</code>, <code>t</code>, <code>F</code> or <code>T</code> in opposite direction [count] times. See also |cpo-;|</p>
+<h2 id="up-down-motions">3. Up-down motions</h2>
+<p><code>k</code> / <code>CTRL-P</code></p>
+<p>[count] lines upward |linewise|.</p>
+<p><code>j</code> / <code>CTRL-J</code> / <code>CTRL-N</code></p>
+<p>[count] lines downward |linewise|.</p>
+<p><code>gk</code></p>
+<p>[count] display lines upward. Differs from <code>k</code> when lines wrap, and when used with an operator, because it's not linewise.</p>
+<p><code>gj</code></p>
+<p>[count] display lines downward. Differs from <code>j</code> when lines wrap, and when used with an operator, because it's not linewise.</p>
+<p><code>-</code>(minus)</p>
+<p>[count] lines upward, on the first non-blank character |linewise|.</p>
+<p><code>+</code> / <code>CTRL-M</code> / <code>&lt;CR&gt;</code></p>
+<p>[count] lines downward, on the first non-blank character |linewise|.</p>
+<p><code>_</code> (underscore)</p>
+<p>[count] - 1 lines downward, on the first non-blank character |linewise|.</p>
+<p><code>G</code></p>
+<p>Goto line [count], default last line, on the first non-blank character |linewise|. If <code>startofline</code> not set, keep the same column. <code>G</code> is a one of |jump-motions|.</p>
+<p><code>gg</code></p>
+<p>Goto line [count], default first line, on the first non-blank character |linewise|. If <code>startofline</code> not set, keep the same column.</p>
+<p><code>:[range]</code></p>
+<p>Set the cursor on the last line number in [range]. [range] can also be just one line number, e.g., <code>:1</code> or <code>:'m</code>. In contrast with |G| this command does not modify the |jumplist|.</p>
+<p><code>{count}%</code></p>
+<p>Go to {count} percentage in the file, on the first non-blank in the line |linewise|. To compute the new line number this formula is used: ({count} * number-of-lines + 99) / 100 See also <code>startofline</code> option.</p>
+<p><code>:[range]go[to] [count]</code> / <code>[count]go</code></p>
+<p>Go to [count] byte in the buffer. Default [count] is one, start of the file. When giving [range], the last number in it used as the byte count. End-of-line characters are counted depending on the current <code>fileformat</code> setting. Also see the |line2byte()| function, and the <code>o</code> option in <code>statusline</code>. {not available when compiled without the |+byte_offset| feature}</p>
+<p>These commands move to the specified line. They stop when reaching the first or the last line. The first two commands put the cursor in the same column (if possible) as it was after the last command that changed the column, except after the <code>$</code> command, then the cursor will be put on the last character of the line.</p>
+<p>If <code>k</code>, <code>-</code> or CTRL-P is used with a [count] and there are less than [count] lines above the cursor and the <code>cpo</code> option includes the <code>-</code> flag it is an error. |cpo--|.</p>
+<h2 id="word-motions">4. Word motions</h2>
+<p><code>w</code></p>
+<p>[count] words forward.</p>
+<p><code>W</code></p>
+<p>[count] WORDS forward.</p>
+<p><code>e</code></p>
+<p>Forward to the end of word [count] |inclusive|. Does not stop in an empty line.</p>
+<p><code>E</code></p>
+<p>Forward to the end of WORD [count] |inclusive|. Does not stop in an empty line.</p>
+<p><code>b</code></p>
+<p>[count] words backward.</p>
+<p><code>B</code></p>
+<p>[count] WORDS backward.</p>
+<p><code>ge</code></p>
+<p>Backward to the end of word [count] |inclusive|.</p>
+<p><code>gE</code></p>
+<p>Backward to the end of WORD [count] |inclusive|.</p>
+<p>These commands move over words or WORDS.</p>
+<p>A <strong>word</strong> consists of a sequence of letters, digits and underscores, or a sequence of other non-blank characters, separated with white space(spaces, tabs, <code>&lt;EOL&gt;</code>). This can be changed with the <code>iskeyword</code> option. An empty line is also considered to be a word.</p>
+<p>A <strong>WORD</strong> consists of a sequence of non-blank characters, separated with white space. An empty line is also considered to be a WORD.</p>
+<p>A sequence of folded lines is counted for one word of a single character. <code>w</code> and <code>W</code>, <code>e</code> and <code>E</code> move to the start/end of the first word or WORD after a range of folded lines. <code>b</code> and <code>B</code> move to the start of the first word or WORD before the fold.</p>
+<p>Special case: <code>cw</code> and <code>cW</code> are treated like <code>ce</code> and <code>cE</code> if the cursor is on a non-blank. This is because <code>cw</code> is interpreted as change-word, and a word does not include the following white space. {Vi: <code>cw</code> when on a blank followed by other blanks changes only the first blank; this is probably a bug, because <code>dw</code> deletes all the blanks}</p>
+<p>Another special case: When using the <code>w</code> motion in combination with an operator and the last word moved over is at the end of a line, the end of that word becomes the end of the operated text, not the first word in the next line.</p>
+<h2 id="text-object-motions">5. Text object motions</h2>
+<p><code>(</code></p>
+<p>[count] sentences backward.</p>
+<p><code>)</code></p>
+<p>[count] sentences forward.</p>
+<p><code>{</code></p>
+<p>[count] paragraphs backward.</p>
+<p><code>}</code></p>
+<p>[count] paragraphs forward.</p>
+<p><code>]]</code></p>
+<p>[count] sections forward or to the next '{' in the first column. When used after an operator, then also stops below a '}' in the first column. |exclusive| Note that |exclusive-linewise| often applies.</p>
+<p><code>][</code></p>
+<p>[count] sections forward or to the next '}' in the first column. |exclusive| Note that |exclusive-linewise| often applies.</p>
+<p><code>[[</code></p>
+<p>[count] sections backward or to the previous '{' in the first column. |exclusive| Note that |exclusive-linewise| often applies.</p>
+<p><code>[]</code></p>
+<p>[count] sections backward or to the previous '}' in the first column. |exclusive| Note that |exclusive-linewise| often applies.</p>
+<p>These commands move over three kinds of text objects.</p>
+<p>A sentence is defined as ending at a '.', '!' or '?' followed by either the end of a line, or by a space or tab. Any number of closing ')', ']', '&quot;' and ''' characters may appear after the '.', '!' or '?' before the spaces, tabs or end of line. A paragraph and section boundary is also a sentence boundary.</p>
+<p>If the <code>J</code> flag is present in <code>cpoptions</code>, at least two spaces have to follow the punctuation mark; <code>&lt;Tab&gt;</code>s are not recognized as white space.</p>
+<p>The definition of a sentence cannot be changed.</p>
+<p>A paragraph begins after each empty line, and also at each of a set of paragraph macros, specified by the pairs of characters in the <code>paragraphs</code> option. The default is &quot;IPLPPPQPP TPHPLIPpLpItpplpipbp&quot;, which corresponds to the macros <code>.IP</code>, <code>.LP</code>, etc. (These are nroff macros, so the dot must be in the first column). A section boundary is also a paragraph boundary. Note that a blank line (only containing white space) is NOT a paragraph boundary.</p>
+<p>Also note that this does not include a '{' or '}' in the first column. When the '{' flag is in <code>cpoptions</code> then '{' in the first column is used as a paragraph boundary |posix|.</p>
+<p>A section begins after a form-feed (<code>&lt;C-L&gt;</code>) in the first column and at each of a set of section macros, specified by the pairs of characters in the <code>sections</code> option. The default is &quot;SHNHH HUnhsh&quot;, which defines a section to start at the nroff macros <code>.SH</code>, <code>.NH</code>, <code>.H</code>, <code>.HU</code>, <code>.nh</code> and <code>.sh</code>.</p>
+<p>The <code>]</code> and <code>[</code> commands stop at the '{' or '}' in the first column. This is useful to find the start or end of a function in a C program. Note that the first character of the command determines the search direction and the second character the type of brace found.</p>
+<p>If your '{' or '}' are not in the first column, and you would like to use <code>[[</code> and <code>]]</code> anyway, try these mappings:</p>
+<pre><code>   :map [[ ?{&lt;CR&gt;w99[{
+   :map ][ /}&lt;CR&gt;b99]}
+   :map ]] j0[[%/{&lt;CR&gt;
+   :map [] k$][%?}&lt;CR&gt;</code></pre>
+<p>[type these literally, see |&lt;&gt;|]</p>
+<h2 id="text-object-selection">6. Text object selection</h2>
+<p>This is a series of commands that can only be used while in Visual mode or after an operator. The commands that start with <code>a</code> select <code>a</code>n object including white space, the commands starting with <code>i</code> select an <code>inner</code> object without white space, or just the white space. Thus the <code>inner</code> commands always select less text than the <code>a</code> commands.</p>
+<p>These commands are not available when the |+textobjects| feature has been disabled at compile time.</p>
+<p>Also see <code>gn</code> and <code>gN</code>, operating on the last search pattern.</p>
+<p><code>aw</code></p>
+<p>&quot;a word&quot;, select [count] words (see |word|). Leading or trailing white space is included, but not counted.</p>
+<p><code>iw</code></p>
+<p>&quot;inner word&quot;, select [count] words (see |word|). White space between words is counted too.</p>
+<p><code>aW</code></p>
+<p>&quot;a WORD&quot;, select [count] WORDs (see |WORD|). Leading or trailing white space is included, but not counted.</p>
+<p><code>iW</code></p>
+<p>&quot;inner WORD&quot;, select [count] WORDs (see |WORD|). White space between words is counted too.</p>
+<p><code>as</code></p>
+<p>&quot;a sentence&quot;, select [count] sentences (see |sentence|).</p>
+<p><code>is</code></p>
+<p>&quot;inner sentence&quot;, select [count] sentences (see |sentence|).</p>
+<p><code>ap</code></p>
+<p>&quot;a paragraph&quot;, select [count] paragraphs (see |paragraph|). Exception: a blank line (only containing white space) is also a paragraph boundary.</p>
+<p><code>ip</code></p>
+<p>&quot;inner paragraph&quot;, select [count] paragraphs (see |paragraph|). Exception: a blank line (only containing white space) is also a paragraph boundary.</p>
+<p><code>a]</code> / <code>a[</code></p>
+<p>&quot;a [] block&quot;, select [count] '[' ']' blocks. This goes backwards to the [count] unclosed '[', and finds the matching ']'. The enclosed text is selected, including the '[' and ']'.</p>
+<p><code>i]</code> / <code>i[</code></p>
+<p>&quot;inner [] block&quot;, select [count] '[' ']' blocks. This goes backwards to the [count] unclosed '[', and finds the matching ']'. The enclosed text is selected, excluding the '[' and ']'.</p>
+<p><code>a)</code> / <code>a(</code> / <code>ab</code></p>
+<p>&quot;a block&quot;, select [count] blocks, from &quot;<code>[count] [(</code>&quot; to the matching <code>)</code>, including the <code>(</code> and <code>)</code>. Does not include white space outside of the parenthesis.</p>
+<p><code>i)</code> / <code>i(</code> / <code>ib</code></p>
+<p>&quot;inner block&quot;, select [count] blocks, from &quot;<code>[count] [(</code>&quot; to the matching ')', excluding the '(' and ')' (see |[(|).</p>
+<p><code>a&gt;</code> / <code>a&lt;</code></p>
+<p>&quot;a &lt;&gt; block&quot;, select [count] &lt;&gt; blocks, from the [count]'th unmatched '&lt;' backwards to the matching '&gt;', including the '&lt;' and '&gt;'.</p>
+<p><code>i&gt;</code> / <code>i&lt;</code></p>
+<p>&quot;inner &lt;&gt; block&quot;, select [count] &lt;&gt; blocks, from the [count]'th unmatched '&lt;' backwards to the matching '&gt;', excluding the '&lt;' and '&gt;'.</p>
+<p><code>at</code></p>
+<p>&quot;a tag block&quot;, select [count] tag blocks, from the [count]'th unmatched <code>&lt;aaa&gt;</code> backwards to the matching <code>&lt;/aaa&gt;</code>, including the <code>&lt;aaa&gt;</code> and <code>&lt;/aaa&gt;</code>. See |tag-blocks| about the details.</p>
+<p><code>it</code></p>
+<p>&quot;inner tag block&quot;, select [count] tag blocks, from the [count]'th unmatched <code>&lt;aaa&gt;</code> backwards to the matching <code>&lt;/aaa&gt;</code>, excluding the <code>&lt;aaa&gt;</code> and <code>&lt;/aaa&gt;</code>. See |tag-blocks| about the details.</p>
+<p><code>a}</code> / <code>a{</code> / <code>aB</code></p>
+<p>&quot;a Block&quot;, select [count] Blocks, from &quot;<code>[count] [{</code>&quot; to the matching '}', including the '{' and '}' (see |[{|).</p>
+<p><code>i}</code> / <code>i{</code> / <code>iB</code></p>
+<p>&quot;inner Block&quot;, select [count] Blocks, from &quot;<code>[count] [{</code>&quot; to the matching '}', excluding the '{' and '}' (see |[{|).</p>
+<p><code>a&quot;</code> / <code>a'</code> / <code>a`</code></p>
+<p>&quot;a quoted string&quot;. Selects the text from the previous quote until the next quote. The <code>quoteescape</code> option is used to skip escaped quotes. Only works within one line. When the cursor starts on a quote, Vim will figure out which quote pairs form a string by searching from the start of the line. Any trailing white space is included, unless there is none, then leading white space is included.</p>
+<p><code>i&quot;</code> / <code>i'</code> / <code>i`</code></p>
+<p>Like a&quot;, a' and a<code>, but exclude the quotes and repeating won't extend the Visual selection.  Special case: With a count of 2 the quotes are included, but no extra white space as with a&quot;/a'/a</code>.</p>
+<p>When used after an operator:</p>
+<p><strong>For non-block objects</strong></p>
+<p>For the <code>a</code> commands: The operator applies to the object and the white space after the object. If there is no white space after the object or when the cursor was in the white space before the object, the white space before the object is included. For the <code>inner</code> commands: If the cursor was on the object, the operator applies to the object. If the cursor was on white space, the operator applies to the white space.</p>
+<p><strong>For a block object:</strong></p>
+<p>The operator applies to the block where the cursor is in, or the block on which the cursor is on one of the braces. For the <code>inner</code> commands the surrounding braces are excluded. For the <code>a</code> commands, the braces are included.</p>
+<p>For illustration, here is a list of delete commands, grouped from small to big objects. Note that for a single character and a whole line the existing vi movement commands are used.</p>
+<ul>
+<li><code>dl</code> delete character (alias: <code>x</code>)</li>
+<li><code>diw</code> delete inner word</li>
+<li><code>daw</code> delete a word</li>
+<li><code>diW</code> delete inner WORD (see |WORD|)</li>
+<li><code>daW</code> delete a WORD (see |WORD|)</li>
+<li><code>dgn</code> delete the next search pattern match</li>
+<li><code>dd</code> delete one line</li>
+<li><code>dis</code> delete inner sentence</li>
+<li><code>das</code> delete a sentence</li>
+<li><code>dib</code> delete inner '(' ')' block</li>
+<li><code>dab</code> delete a '(' ')' block</li>
+<li><code>dip</code> delete inner paragraph</li>
+<li><code>dap</code> delete a paragraph</li>
+<li><code>diB</code> delete inner '{' '}' block</li>
+<li><code>daB</code> delete a '{' '}' block</li>
+</ul>
+<p>Note the difference between using a movement command and an object. The movement command operates from here (cursor position) to where the movement takes us. When using an object the whole object is operated upon, no matter where on the object the cursor is. For example, compare <code>dw</code> and <code>daw</code>: <code>dw</code> deletes from the cursor position to the start of the next word, <code>daw</code> deletes the word under the cursor and the space after or before it.</p>
+<p><strong>Tag blocks</strong></p>
+<p>For the <code>it</code> and <code>at</code> text objects an attempt is done to select blocks between matching tags for HTML and XML. But since these are not completely compatible there are a few restrictions.</p>
+<p>The normal method is to select a <code>&lt;tag&gt;</code> until the matching <code>&lt;/tag&gt;</code>. For <code>at</code> the tags are included, for <code>it</code> they are excluded. But when <code>it</code> is repeated the tags will be included (otherwise nothing would change). Also, <code>it</code> used on a tag block with no contents will select the leading tag.</p>
+<p><code>&lt;aaa/&gt;</code> items are skipped. Case is ignored, also for XML where case does matter.</p>
+<p>In HTML it is possible to have a tag like <code>&lt;br&gt;</code> or <code>&lt;meta ...&gt;</code> without a matching end tag. These are ignored.</p>
+<p>The text objects are tolerant about mistakes. Stray end tags are ignored.</p>
+<h2 id="marks">7. Marks</h2>
+<p>Jumping to a mark can be done in two ways:</p>
+<ol style="list-style-type: decimal">
+<li><p>With <code>`</code> (backtick): The cursor is positioned at the specified location and the motion is |exclusive|.</p></li>
+<li><p>With ' (single quote): The cursor is positioned on the first non-blank character in the line of the specified location and the motion is linewise.</p></li>
+</ol>
+<p><code>m{a-zA-Z}</code></p>
+<p>Set mark {a-zA-Z} at cursor position (does not move the cursor, this is not a motion command).</p>
+<p><code>m'</code> / <code>m`</code></p>
+<p>Set the previous context mark. This can be jumped to with the <code>''</code> or &quot;``&quot; command (does not move the cursor, this is not a motion command).</p>
+<p><code>m[</code> / <code>m]</code></p>
+<p>Set the |'[| or |']| mark. Useful when an operator is to be simulated by multiple commands. (does not move the cursor, this is not a motion command).</p>
+<p><code>m&lt;</code> / <code>m&gt;</code></p>
+<p>Set the |'&lt;| or |'&gt;| mark. Useful to change what the <code>gv</code> command selects. (does not move the cursor, this is not a motion command). Note that the Visual mode cannot be set, only the start and end position.</p>
+<p><code>:[range]ma[rk] {a-zA-Z'}</code></p>
+<p>Set mark {a-zA-Z'} at last line number in [range], column 0. Default is cursor line.</p>
+<p><code>:[range]k{a-zA-Z'}</code></p>
+<p>Same as :mark, but the space before the mark name can be omitted.</p>
+<p><code>'{a-z}</code> / <code>`{a-z}</code></p>
+<p>Jump to the mark {a-z} in the current buffer.</p>
+<p><code>'{A-Z0-9}</code> / <code>`{A-Z0-9}</code></p>
+<p>To the mark {A-Z0-9} in the file where it was set (not a motion command when in another file).</p>
+<p><code>g'{mark}</code> / <code>g`{mark}</code></p>
+<p>Jump to the {mark}, but don't change the jumplist when jumping within the current buffer. Example:</p>
+<pre><code>g`&quot;</code></pre>
+<p>jumps to the last known position in a file. See $VIMRUNTIME/vimrc_example.vim. Also see |:keepjumps|.</p>
+<p><code>:marks</code></p>
+<p>List all the current marks (not a motion command). The |'(|, |')|, |'{| and |'}| marks are not listed. The first column has number zero.</p>
+<p><code>:marks {arg}</code></p>
+<p>List the marks that are mentioned in {arg} (not a motion command). For example:</p>
+<pre><code>:marks aB </code></pre>
+<p>to list marks <code>a</code> and <code>B</code>.</p>
+<p><code>:delm[arks] {marks}</code></p>
+<p>Delete the specified marks. Marks that can be deleted include A-Z and 0-9. You cannot delete the ' mark. They can be specified by giving the list of mark names, or with a range, separated with a dash. Spaces are ignored. Examples:</p>
+<pre><code>:delmarks a    deletes mark a
+:delmarks a b 1    deletes marks a, b and 1
+:delmarks Aa       deletes marks A and a
+:delmarks p-z      deletes marks in the range p to z
+:delmarks ^.[]     deletes marks ^ . [ ]
+:delmarks \&quot;       deletes mark &quot;</code></pre>
+<p><code>:delm[arks]!i</code></p>
+<p>Delete all marks for the current buffer, but not marks A-Z or 0-9.</p>
+<p>A mark is not visible in any way. It is just a position in the file that is remembered. Do not confuse marks with named registers, they are totally unrelated.</p>
+<pre><code>&#39;a - &#39;z    lowercase marks, valid within one file
+&#39;A - &#39;Z    uppercase marks, also called file marks, valid between files
+&#39;0 - &#39;9    numbered marks, set from .viminfo file</code></pre>
+<p>Lowercase marks 'a to 'z are remembered as long as the file remains in the buffer list. If you remove the file from the buffer list, all its marks are lost. If you delete a line that contains a mark, that mark is erased.</p>
+<p>Lowercase marks can be used in combination with operators. For example: <code>d't</code> deletes the lines from the cursor position to mark <code>t</code>. Hint: Use mark <code>t</code> for Top, <code>b</code> for Bottom, etc.. Lowercase marks are restored when using undo and redo.</p>
+<p>Uppercase marks 'A to 'Z include the file name. {Vi: no uppercase marks} You can use them to jump from file to file. You can only use an uppercase mark with an operator if the mark is in the current file. The line number of the mark remains correct, even if you insert/delete lines or edit another file for a moment. When the <code>viminfo</code> option is not empty, uppercase marks are kept in the .viminfo file. See |viminfo-file-marks|.</p>
+<p>Numbered marks '0 to '9 are quite different. They can not be set directly. They are only present when using a viminfo file |viminfo-file|. Basically '0 is the location of the cursor when you last exited Vim, '1 the last but one time, etc. Use the <code>r</code> flag in <code>viminfo</code> to specify files for which no Numbered mark should be stored. See |viminfo-file-marks|.</p>
+<p><code>'[</code> / <code>`[</code></p>
+<p>To the first character of the previously changed or yanked text.</p>
+<p><code>']</code> / <code>`]</code></p>
+<p>To the last character of the previously changed or yanked text.</p>
+<p>After executing an operator the Cursor is put at the beginning of the text that was operated upon. After a put command (<code>p</code> or <code>P</code>) the cursor is sometimes placed at the first inserted line and sometimes on the last inserted character. The four commands above put the cursor at either end. Example:</p>
+<p>After yanking 10 lines you want to go to the last one of them: <code>10Y']</code>. After inserting several lines with the <code>p</code> command you want to jump to the lowest inserted line: <code>p']</code>. This also works for text that has been inserted.</p>
+<p>Note: After deleting text, the start and end positions are the same, except when using blockwise Visual mode. These commands do not work when no change was made yet in the current file.</p>
+<p><code>'&lt;</code> / <code>`&lt;</code></p>
+<p>To the first line or character of the last selected Visual area in the current buffer. For block mode it may also be the last character in the first line (to be able to define the block). .</p>
+<p><code>'&gt;</code> / <code>`&gt;</code></p>
+<p>To the last line or character of the last selected Visual area in the current buffer. For block mode it may also be the first character of the last line (to be able to define the block). Note that <code>selection</code> applies, the position may be just after the Visual area. .</p>
+<p><code>''</code> / <code>``</code></p>
+<p>To the position before the latest jump, or where the last <code>m'</code> or &quot;m`&quot; command was given. Not set when the |:keepjumps| command modifier was used. Also see |restore-position|.</p>
+<p><code>'&quot;</code> / <code>`&quot;</code></p>
+<p>To the cursor position when last exiting the current buffer. Defaults to the first character of the first line. See |last-position-jump| for how to use this for each opened file. Only one position is remembered per buffer, not one for each window. As long as the buffer is visible in a window the position won't be changed. .</p>
+<p><code>'^</code> / `^</p>
+<p>To the position where the cursor was the last time when Insert mode was stopped. This is used by the |gi| command. Not set when the |:keepjumps| command modifier was used.</p>
+<p><code>'.</code> / <code>`.</code></p>
+<p>To the position where the last change was made. The position is at or near where the change started. Sometimes a command is executed as several changes, then the position can be near the end of what the command changed. For example when inserting a word, the position will be on the last character.</p>
+<p><code>'(</code> / <code>`(</code></p>
+<p>To the start of the current sentence, like the |(| command.</p>
+<p><code>')</code> / <code>`)</code></p>
+<p>To the end of the current sentence, like the |)| command.</p>
+<p><code>'{</code> / <code>`{</code></p>
+<p>To the start of the current paragraph, like the |{| command.</p>
+<p><code>'}</code> / `<code>}</code></p>
+<p>To the end of the current paragraph, like the |}| command.</p>
+<p>These commands are not marks themselves, but jump to a mark:</p>
+<p><code>]'</code></p>
+<p>[count] times to next line with a lowercase mark below the cursor, on the first non-blank character in the line.</p>
+<p>`]``</p>
+<p>[count] times to lowercase mark after the cursor.</p>
+<p><code>['</code></p>
+<p>[count] times to previous line with a lowercase mark before the cursor, on the first non-blank character in the line.</p>
+<p>`[``</p>
+<p>[count] times to lowercase mark before the cursor.</p>
+<p><code>:loc[kmarks] {command}</code></p>
+<p>Execute {command} without adjusting marks. This is useful when changing text in a way that the line count will be the same when the change has completed. WARNING: When the line count does change, marks below the change will keep their line number, thus move to another text line. These items will not be adjusted for deleted/inserted lines:</p>
+<ul>
+<li>lower case letter marks 'a - 'z</li>
+<li>upper case letter marks 'A - 'Z</li>
+<li>numbered marks '0 - '9</li>
+<li>last insert position '^</li>
+<li>last change position '.</li>
+<li>the Visual area '&lt; and '&gt;</li>
+<li>line numbers in placed signs</li>
+<li>line numbers in quickfix positions</li>
+<li>positions in the |jumplist|</li>
+<li>positions in the |tagstack|</li>
+</ul>
+<p>These items will still be adjusted:</p>
+<ul>
+<li>previous context mark ''</li>
+<li>the cursor position</li>
+<li>the view of a window on a buffer</li>
+<li>folds</li>
+<li>diffs</li>
+</ul>
+<p><code>:kee[pmarks] {command}</code></p>
+<p>Currently only has effect for the filter command |:range!|:</p>
+<ul>
+<li>When the number of lines after filtering is equal to or larger than before, all marks are kept at the same line number.</li>
+<li>When the number of lines decreases, the marks in the lines that disappeared are deleted.</li>
+</ul>
+<p>In any case the marks below the filtered text have their line numbers adjusted, thus stick to the text, as usual. When the <code>R</code> flag is missing from <code>cpoptions</code> this has the same effect as using <code>:keepmarks</code>.</p>
+<p><code>:keepj[umps] {command}</code></p>
+<p>Moving around in {command} does not change the |''|, |'.| and |'^| marks, the |jumplist| or the |changelist|. Useful when making a change or inserting text automatically and the user doesn't want to go to this position. E.g., when updating a &quot;Last change&quot; timestamp in the first line:</p>
+<p>:let lnum = line(&quot;.&quot;) :keepjumps normal gg :call SetLastChange() :keepjumps exe &quot;normal &quot; . lnum . <code>G</code></p>
+<p>Note that <code>:keepjumps</code> must be used for every command. When invoking a function the commands in that function can still change the jumplist. Also, for &quot;:keepjumps exe 'command '&quot; the <code>command</code> won't keep jumps. Instead use: &quot;:exe 'keepjumps command'&quot;</p>
+<h2 id="jumps">8. Jumps</h2>
+<p>A <code>jump</code> is one of the following commands: <code>'</code>, &quot;<code>&quot;,</code>G<code>,</code>/<code>,</code>?<code>,</code>n<code>,</code>N<code>,</code>%<code>,</code>(<code>,</code>)<code>,</code>[[<code>,</code>]]<code>,</code>{<code>,</code>}<code>,</code>:s<code>,</code>:tag<code>,</code>L<code>,</code>M<code>,</code>H<code>and the commands that start editing a new file. If you make the cursor</code>jump<code>with one of these commands, the position of the cursor before the jump is remembered. You can return to that position with the</code>''` and &quot;``&quot; command, unless the line containing that position was changed or deleted.</p>
+<p><code>CTRL-O</code></p>
+<p>Go to [count] Older cursor position in jump list (not a motion command). {not available without the |+jumplist| feature}</p>
+<p><code>&lt;Tab&gt;</code> / <code>CTRL-I</code></p>
+<p>Go to [count] newer cursor position in jump list (not a motion command). {not available without the |+jumplist| feature}</p>
+<p><code>:ju[mps]</code></p>
+<p>Print the jump list (not a motion command). {not available without the |+jumplist| feature}</p>
+<p>Jumps are remembered in a jump list. With the <code>CTRL-O</code> and <code>CTRL-I</code> command you can go to cursor positions before older jumps, and back again. Thus you can move up and down the list. There is a separate jump list for each window. The maximum number of entries is fixed at 100. {not available without the |+jumplist| feature}</p>
+<p>For example, after three jump commands you have this jump list:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">jump</th>
+<th align="left">line</th>
+<th align="left">col</th>
+<th align="left">file/text ~</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">some text ~</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">70</td>
+<td align="left">0</td>
+<td align="left">another line ~</td>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">1154</td>
+<td align="left">23</td>
+<td align="left">end. ~</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>file/text</code> column shows the file name, or the text at the jump if it is in the current file (an indent is removed and a long line is truncated to fit in the window).</p>
+<p>You are currently in line 1167. If you then use the CTRL-O command, the cursor is put in line 1154. This results in:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">jump</th>
+<th align="left">line</th>
+<th align="left">col</th>
+<th align="left">file/text ~</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">some text ~</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">70</td>
+<td align="left">0</td>
+<td align="left">another line ~</td>
+</tr>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">1154</td>
+<td align="left">23</td>
+<td align="left">end. ~</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">1167</td>
+<td align="left">0</td>
+<td align="left">foo bar ~</td>
+</tr>
+</tbody>
+</table>
+<p>The pointer will be set at the last used jump position. The next CTRL-O command will use the entry above it, the next CTRL-I command will use the entry below it. If the pointer is below the last entry, this indicates that you did not use a CTRL-I or CTRL-O before. In this case the CTRL-O command will cause the cursor position to be added to the jump list, so you can get back to the position before the CTRL-O. In this case this is line 1167.</p>
+<p>With more CTRL-O commands you will go to lines 70 and 1. If you use CTRL-I you can go back to 1154 and 1167 again. Note that the number in the <code>jump</code> column indicates the count for the CTRL-O or CTRL-I command that takes you to this position.</p>
+<p>If you use a jump command, the current line number is inserted at the end of the jump list. If the same line was already in the jump list, it is removed. The result is that when repeating CTRL-O you will get back to old positions only once.</p>
+<p>When the |:keepjumps| command modifier is used, jumps are not stored in the jumplist. Jumps are also not stored in other cases, e.g., in a |:global| command. You can explicitly add a jump by setting the ' mark with <code>m'</code>. Note that calling setpos() does not do this.<br />
+After the CTRL-O command that got you into line 1154 you could give another jump command (e.g., <code>G</code>). The jump list would then become:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">jump</th>
+<th align="left">line</th>
+<th align="left">col</th>
+<th align="left">file/text ~</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">4</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">some text ~</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">70</td>
+<td align="left">0</td>
+<td align="left">another line ~</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">1167</td>
+<td align="left">0</td>
+<td align="left">foo bar ~</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">1154</td>
+<td align="left">23</td>
+<td align="left">end. ~</td>
+</tr>
+</tbody>
+</table>
+<p>The line numbers will be adjusted for deleted and inserted lines. This fails if you stop editing a file without writing, like with <code>:n!</code>.<br />
+When you split a window, the jumplist will be copied to the new window.</p>
+<p>If you have included the ' item in the <code>viminfo</code> option the jumplist will be stored in the viminfo file and restored when starting Vim.</p>
+<p><strong>CHANGE LIST JUMPS</strong></p>
+<p>When making a change the cursor position is remembered. One position is remembered for every change that can be undone, unless it is close to a previous change. Two commands can be used to jump to positions of changes, also those that have been undone:</p>
+<p><code>g;</code></p>
+<p>Go to [count] older position in change list. If [count] is larger than the number of older change positions go to the oldest change. If there is no older change an error message is given. (not a motion command) {not available without the |+jumplist| feature}</p>
+<p><code>g,</code></p>
+<p>Go to [count] newer cursor position in change list. Just like |g;| but in the opposite direction. (not a motion command) {not available without the |+jumplist| feature}</p>
+<p>When using a count you jump as far back or forward as possible. Thus you can use <code>999g;</code> to go to the first change for which the position is still remembered. The number of entries in the change list is fixed and is the same as for the |jumplist|.</p>
+<p>When two undo-able changes are in the same line and at a column position less than <code>textwidth</code> apart only the last one is remembered. This avoids that a sequence of small changes in a line, for example <code>xxxxx</code>, adds many positions to the change list. When <code>textwidth</code> is zero <code>wrapmargin</code> is used. When that also isn't set a fixed number of 79 is used. Detail: For the computations bytes are used, not characters, to avoid a speed penalty (this only matters for multi-byte encodings).</p>
+<p>Note that when text has been inserted or deleted the cursor position might be a bit different from the position of the change. Especially when lines have been deleted.</p>
+<p>When the |:keepjumps| command modifier is used the position of a change is not remembered.</p>
+<p><code>:changes</code></p>
+<p>Print the change list. A <code>&gt;</code> character indicates the current position. Just after a change it is below the newest entry, indicating that <code>g;</code> takes you to the newest entry position. The first column indicates the count needed to take you to this position. Example:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">change</th>
+<th align="left">line</th>
+<th align="left">col</th>
+<th align="left">text ~</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">9</td>
+<td align="left">8</td>
+<td align="left">bla bla bla</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">11</td>
+<td align="left">57</td>
+<td align="left">foo is a bar</td>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">14</td>
+<td align="left">54</td>
+<td align="left">the latest changed line</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>3g;</code> command takes you to line 9. Then the output of &quot;:changes is:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">change</th>
+<th align="left">line</th>
+<th align="left">col</th>
+<th align="left">text ~</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">9</td>
+<td align="left">8</td>
+<td align="left">bla bla bla</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">11</td>
+<td align="left">57</td>
+<td align="left">foo is a bar</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">14</td>
+<td align="left">54</td>
+<td align="left">the latest changed line</td>
+</tr>
+</tbody>
+</table>
+<p>Now you can use <code>g,</code> to go to line 11 and <code>2g,</code> to go to line 14.</p>
+<h2 id="various-motions">9. Various motions</h2>
+<p><code>%</code></p>
+<p>Find the next item in this line after or under the cursor and jump to its match. |inclusive| motion. Items can be:</p>
+<ul>
+<li><code>([{}])</code>: parenthesis or (curly/square) brackets (this can be changed with the <code>matchpairs</code> option)</li>
+<li><code>//</code>: start or end of C-style comment</li>
+<li><code>#if</code>, <code>#ifdef</code>, <code>#else</code>, <code>#elif</code>, <code>#endif</code>: C preprocessor conditionals (when the cursor is on the # or no ([{ following)</li>
+</ul>
+<p>For other items the matchit plugin can be used, see |matchit-install|. This plugin also helps to skip matches in comments.</p>
+<p>When <code>cpoptions</code> contains <code>M</code> |cpo-M| backslashes before parens and braces are ignored. Without <code>M</code> the number of backslashes matters: an even number doesn't match with an odd number. Thus in &quot;( ) )&quot; and &quot;( ( )&quot; the first and last parenthesis match.</p>
+<p>When the '%' character is not present in <code>cpoptions</code> |cpo-%|, parens and braces inside double quotes are ignored, unless the number of parens/braces in a line is uneven and this line and the previous one does not end in a backslash. '(', '{', '[', ']', '}' and ')' are also ignored (parens and braces inside single quotes). Note that this works fine for C, but not for Perl, where single quotes are used for strings.</p>
+<p>Nothing special is done for matches in comments. You can either use the matchit plugin |matchit-install| or put quotes around matches.</p>
+<p>No count is allowed, {count}% jumps to a line {count} percentage down the file |N%|. Using '%' on #if/#else/#endif makes the movement linewise.</p>
+<p><code>[(</code>: go to [count] previous unmatched '('.</p>
+<p><code>[{</code>: go to [count] previous unmatched '{'.</p>
+<p><code>])</code>: go to [count] next unmatched ')'.</p>
+<p><code>]}</code>: go to [count] next unmatched '}'.</p>
+<p>The above four commands can be used to go to the start or end of the current code block. It is like doing <code>%</code> on the '(', ')', '{' or '}' at the other end of the code block, but you can do this from anywhere in the code block. Very useful for C programs. Example: When standing on &quot;case x:&quot;, <code>[{</code> will bring you back to the switch statement.</p>
+<p><code>]m</code></p>
+<p>Go to [count] next start of a method (for Java or similar structured language). When not before the start of a method, jump to the start or end of the class. When no '{' is found after the cursor, this is an error.</p>
+<p><code>]M</code></p>
+<p>Go to [count] next end of a method (for Java or similar structured language). When not before the end of a method, jump to the start or end of the class. When no '}' is found after the cursor, this is an error.</p>
+<p><code>[m</code></p>
+<p>Go to [count] previous start of a method (for Java or similar structured language). When not after the start of a method, jump to the start or end of the class. When no '{' is found before the cursor this is an error.</p>
+<p><code>[M</code></p>
+<p>Go to [count] previous end of a method (for Java or similar structured language). When not after the end of a method, jump to the start or end of the class. When no '}' is found before the cursor this is an error.</p>
+<p>The above two commands assume that the file contains a class with methods. The class definition is surrounded in '{' and '}'. Each method in the class is also surrounded with '{' and '}'. This applies to the Java language. The file looks like this:</p>
+<pre><code>    // comment
+    class foo {
+        int method_one() {
+            body_one();
+        }
+        int method_two() {
+            body_two();
+        }
+    }</code></pre>
+<p>Starting with the cursor on <code>body_two()</code>, using <code>[m</code> will jump to the '{' at the start of <code>method_two()</code> (obviously this is much more useful when the method is long!). Using <code>2[m</code> will jump to the start of <code>method_one()</code>. Using <code>3[m</code> will jump to the start of the class.</p>
+<p><code>[#</code></p>
+<p>go to [count] previous unmatched <code>#if</code> or <code>#else</code>.</p>
+<p><code>]#</code></p>
+<p>go to [count] next unmatched <code>#else</code> or <code>#endif</code>.</p>
+<p>These two commands work in C programs that contain #if/#else/#endif constructs. It brings you to the start or end of the #if/#else/#endif where the current line is included. You can then use <code>%</code> to go to the matching line.</p>
+<p><code>[&quot;.</code></p>
+<p><code>]/&quot;.</code></p>
+<p><code>H</code></p>
+<p>To line [count] from top (Home) of window (default: first line on the window) on the first non-blank character |linewise|. See also <code>startofline</code> option. Cursor is adjusted for <code>scrolloff</code> option.</p>
+<p><code>M</code></p>
+<p>To Middle line of window, on the first non-blank character |linewise|. See also <code>startofline</code> option.</p>
+<p><code>L</code></p>
+<p>To line [count] from bottom of window (default: Last line on the window) on the first non-blank character |linewise|. See also <code>startofline</code> option. Cursor is adjusted for <code>scrolloff</code> option.</p>
+<p><code>&lt;LeftMouse&gt;</code></p>
+<p>Moves to the position on the screen where the mouse click is |exclusive|. See also |<LeftMouse>|. If the position is in a status line, that window is made the active window and the cursor is not moved.</p>

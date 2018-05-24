@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link type="text/css" href="../styles.css" rel="Stylesheet" />
+  </head>
+  <body>
+    <h1 id="第-8-章-泛型程序设计">第 8 章 泛型程序设计</h1>
+    <blockquote>
+      <p>2018年5月23日</p>
+    </blockquote>
+    <h2 id="为什么使用泛型程序设计">8.1 为什么使用泛型程序设计</h2>
+    <p>使用泛型编写的代码可以被很多不同类型的对象所重用。</p>
+    <p>不使用泛型的代码存在两个问题：</p>
+    <ul>
+      <li>当获取一个值时必需进行强制类型转换。</li>
+    </ul>
+    <pre class="java,l1"><code>List files = new ArrayList();
+// do something
+String filename = (String) files.get(0);</code></pre>
+    <ul>
+      <li>没有错误检查。可以向 ArrayList 中添加任何类的对象。</li>
+    </ul>
+    <pre class="java,l1"><code>files.add(new File(&quot;...&quot;));</code></pre>
+    <p>泛型编程利用<strong>类型参数</strong>（type parameters）解决了以上两个问题，使程序编写更容易、程序更安全、可读性更高。</p>
+    <h2 id="定义简单泛型类">8.2 定义简单泛型类</h2>
+    <pre class="java,l1"><code>/**
+ * 将类型变量 T 用尖括号括起来，放在类名的后面
+ * @param &lt;T&gt;
+ */
+public class Pair&lt;T&gt; {
+
+  private T first;
+  private T second;
+
+  public Pair() {
+    first = null;
+    second = null;
+  }
+  public Pair(T first, T second) {
+    this.first = first;
+    this.second = second;
+  }
+  public T getFirst() {
+    return first;
+  }
+  public T getSecond() {
+    return second;
+  }
+  public void setFirst(T newValue) {
+    first = newValue;
+  }
+  public void setSecond(T newValue) {
+    second = newValue;
+  }
+}</code></pre>
+    <p>用具体的类型替换类型变量叫做<strong>实例化泛型类型</strong>：</p>
+    <pre><code>Pair&lt;String&gt;</code></pre>
+    <h3 id="使用泛型类">使用泛型类</h3>
+    <pre class="java,l1"><code>public class ArrayAlg {
+
+  public static void main(String[] args) {
+    String[] words = { &quot;Mary&quot;, &quot;had&quot;, &quot;a&quot;, &quot;little&quot;, &quot;lamb&quot; };
+    Pair&lt;String&gt; mm = ArrayAlg.minmax(words);
+    System.out.println(&quot;min = &quot; + mm.getFirst());
+    System.out.println(&quot;max = &quot; + mm.getSecond());
+  }
+
+  public static Pair&lt;String&gt; minmax(String[] a) {
+    if (a == null || a.length == 0)
+      return null;
+
+    String min = a[0];
+    String max = a[0];
+
+    for (int i = 1; i &lt; a.length; i++) {
+      if (min.compareTo(a[i]) &gt; 0)
+    min = a[i];
+      if (max.compareTo(a[i]) &lt; 0)
+    max = a[i];
+    }
+
+    return new Pair&lt;&gt;(min, max);
+  }
+}</code></pre>
+
+  </body>
+</html>
