@@ -31,6 +31,8 @@
 
     <item id="generic" media-type="text/x-oeb1-document" href="contents/generic.html"></item>
 
+    <item id="js_ej_10_modules.html" media-type="text/x-oeb1-document" href="contents/js_ej_10_modules.html"></item>
+
   </manifest>
   <spine toc="ncx">
 
@@ -50,6 +52,8 @@
     <itemref idref="blogs_wooin"/>
 
     <itemref idref="generic"/>
+
+    <itemref idref="js_ej_10_modules.html"/>
 
   </spine>
   <guide>
