@@ -191,53 +191,55 @@ Read Drew Neil’s</code></pre>
       <p>得到：</p>
       <pre><code>Practical Vim, by Drew Neil
 Read Drew Neil’s *Practical Vim.*</code></pre>
-   <h1 id="第-10-章-复制与粘贴">第 10 章 复制与粘贴</h1>
-    <p>Vim 操作的不是剪贴板，而是寄存器。</p>
-    <p>可以使用 <code>&quot;{register}</code> 的方式指定要使用的寄存器，若不指定，Vim 使用默认的“无名寄存器”。</p>
-    <p><code>d</code> 命令会把制定文本复制到寄存器，然后再从文档中删除。</p>
-    <p>Vim 中真正的删除操作，即只删除文本而不把文本复制到寄存器，是使用名为“黑洞”的寄存器。使用下划线 <code>_</code> 引用黑洞寄存器。如，<code>_d{motion}</code> 会执行纯粹的删除操作。当你只想删除文本却不想覆盖寄存器时，此命令很管用。</p>
-    <p>把当前单词复制到寄存器 <code>a</code> 中：<code>&quot;ayiw</code></p>
-    <p>把当前整行文本剪切至寄存器 <code>b</code> 中：<code>&quot;bdd</code></p>
-    <p>粘贴寄存器 <code>a</code> 中的文本：<code>&quot;ap</code></p>
-    <p>粘贴寄存器 <code>b</code> 中的文本：<code>&quot;bp</code></p>
-    <h2 id="无名寄存器">无名寄存器</h2>
-    <p>用一个双引号 <code>&quot;</code> 表示无名寄存器。</p>
-    <p>Vim 默认使用无名寄存器，所以 <code>p</code> 等同于 <code>&quot;&quot;p</code> 命令。</p>
-    <p>无名寄存器总是缺省的。<code>x</code>、<code>s</code>、<code>d{motion}</code>、<code>c{motion}</code> 和 <code>y{motion}</code> 都会覆盖无名寄存器中的内容。可以通过加 <code>&quot;{register}</code> 前缀来指定使用其他寄存器。</p>
-    <h2 id="复制专用寄存器">复制专用寄存器</h2>
-    <p><code>0</code> 号寄存器：<code>&quot;0</code>。</p>
-    <p>仅当使用 <code>y{motion}</code> 时，<code>0</code> 号寄存器中的内容才会被覆盖，<strong>此时，无名寄存器和 0 号寄存器中的内容相同。</strong> 可以使用 <code>:reg</code> 查看这两个寄存器中的内容。</p>
-    <p><code>x</code>、<code>s</code>、<code>c{motion}</code> 和 <code>d{motion}</code> 只会覆盖无名寄存器，不会覆盖 <code>0</code> 号寄存器。</p>
-    <p>练习：将下面代码中的 <code>somethingInTheWay</code> 改为 <code>collection</code>。</p>
-    <pre><code>collection = getCollection();
-process(somethingInTheWay, target);</code></pre>
-    <p>方案一：</p>
-    <ol style="list-style-type: decimal">
-      <li>假设光标此时位于单词 <code>collection</code> 上。复制该单词：<code>yiw</code>。</li>
-      <li>移动光标至单词 <code>somethingInTheWay</code> 上，删除该单词：<code>diw</code>。</li>
-      <li>粘贴 0 号寄存器中的文本：<code>&quot;0p</code>。</li>
-    </ol>
-    <p>方案二：</p>
-    <ol style="list-style-type: decimal">
-      <li>假设光标此时位于单词 <code>collection</code> 上。复制该单词：<code>yiw</code>。</li>
-      <li>移动光标至单词 <code>somethingInTheWay</code> 上，删除该单词并进入插入模式：<code>ciw</code>。</li>
-      <li>粘贴 0 号寄存器中的内容并退出插入模式：<code>&lt;C-r&gt;0&lt;Esc&gt;</code>。</li>
-    </ol>
-    <p><code>ciw</code> 带来的好处是，之后可以用点 <code>.</code> 命令重复将其他单词替换为 <code>collection</code>。</p>
-    <p>方案三，利用可视模式：</p>
-    <ol style="list-style-type: decimal">
-      <li>假设光标此时位于单词 <code>collection</code> 上。复制该单词：<code>yiw</code>。</li>
-      <li>移动光标至单词 <code>somethingInTheWay</code> 上，选中该单词：<code>viw</code>。</li>
-      <li>粘贴无名寄存器中的文本：<code>p</code>。</li>
-    </ol>
-    <p>注意，方案三中的第 1 步操作结束后，无名寄存器和 0 号寄存器中的内容相同；但第 3 步操作结束后，0 号寄存器中的内容不变，但无名寄存器中的内容会被替换为刚才高亮选中的文本，因为我们其实是对这些文本进行了删除操作。所以如果此时还想粘贴单词 <code>collection</code>，必须使用 <code>&quot;0p</code>，否则粘贴的单词是 <code>somethingInTheWay</code>。</p>
-    <p><strong>小技巧：</strong></p>
-    <p>使用 <code>gv</code> 可重选上一次选中的文本呢。</p>
-    <h2 id="查看寄存器中的内容">查看寄存器中的内容</h2>
-    <p><code>:reg</code></p>
-    <h2 id="有名寄存器">有名寄存器</h2>
-    <p>Vim 提供了一组以 26 个英文小写字母命名的有名寄存器，这意味着可以剪切、复制、粘贴多达 26 段文本。</p>
-    <pre><code>  &quot;[a-z]d{motion}
+      <h1 id="第-10-章-复制与粘贴">第 10 章 复制与粘贴</h1>
+      <p>Vim 操作的不是剪贴板，而是寄存器。</p>
+      <p>可以使用 <code>&quot;{register}</code> 的方式指定要使用的寄存器，若不指定，Vim 使用默认的“无名寄存器”。</p>
+      <p><code>d</code> 命令会把指定文本复制到寄存器，然后再从文档中删除。</p>
+      <p>Vim 中真正的删除操作，即只删除文本而不把文本复制到寄存器，是使用名为“黑洞”的寄存器。使用下划线 <code>_</code> 引用黑洞寄存器。如，<code>_d{motion}</code> 会执行纯粹的删除操作。当你只想删除文本却不想覆盖寄存器时，此命令很管用。</p>
+    <ul>
+      <li>把当前单词复制到寄存器 <code>a</code> 中：<code>&quot;ayiw</code></li>
+      <li>把当前整行文本剪切至寄存器 <code>b</code> 中：<code>&quot;bdd</code></li>
+      <li>粘贴寄存器 <code>a</code> 中的文本：<code>&quot;ap</code></li>
+      <li>粘贴寄存器 <code>b</code> 中的文本：<code>&quot;bp</code></li>
+    </ul>
+      <h2 id="无名寄存器">无名寄存器</h2>
+      <p>用一个双引号 <code>&quot;</code> 表示无名寄存器。</p>
+      <p>Vim 默认使用无名寄存器，所以 <code>p</code> 等同于 <code>&quot;&quot;p</code> 命令。</p>
+      <p>无名寄存器总是缺省的。<code>x</code>、<code>s</code>、<code>d{motion}</code>、<code>c{motion}</code> 和 <code>y{motion}</code> 都会覆盖无名寄存器中的内容。可以通过加 <code>&quot;{register}</code> 前缀来指定使用其他寄存器。</p>
+      <h2 id="复制专用寄存器">复制专用寄存器</h2>
+      <p><code>0</code> 号寄存器：<code>&quot;0</code>。</p>
+      <p>仅当使用 <code>y{motion}</code> 时，<code>0</code> 号寄存器中的内容才会被覆盖，<strong>此时，无名寄存器和 0 号寄存器中的内容相同。</strong> 可以使用 <code>:reg</code> 查看这两个寄存器中的内容。</p>
+      <p><code>x</code>、<code>s</code>、<code>c{motion}</code> 和 <code>d{motion}</code> 只会覆盖无名寄存器，不会覆盖 <code>0</code> 号寄存器。</p>
+      <p>练习：将下面代码中的 <code>somethingInTheWay</code> 改为 <code>collection</code>。</p>
+      <pre><code>    collection = getCollection();
+    process(somethingInTheWay, target);</code></pre>
+      <p>方案一：</p>
+      <ol style="list-style-type: decimal">
+	<li>假设光标此时位于单词 <code>collection</code> 上。复制该单词：<code>yiw</code>。</li>
+	<li>移动光标至单词 <code>somethingInTheWay</code> 上，删除该单词：<code>diw</code>。</li>
+	<li>粘贴 0 号寄存器中的文本：<code>&quot;0p</code>。</li>
+      </ol>
+      <p>方案二：</p>
+      <ol style="list-style-type: decimal">
+	<li>假设光标此时位于单词 <code>collection</code> 上。复制该单词：<code>yiw</code>。</li>
+	<li>移动光标至单词 <code>somethingInTheWay</code> 上，删除该单词并进入插入模式：<code>ciw</code>。</li>
+	<li>粘贴 0 号寄存器中的内容并退出插入模式：<code>&lt;C-r&gt;0&lt;Esc&gt;</code>。</li>
+      </ol>
+      <blockquote><p><code>ciw</code> 带来的好处是，之后可以用点 <code>.</code> 命令重复将其他单词替换为 <code>collection</code>。</p></blockquote>
+      <p>方案三，利用可视模式：</p>
+      <ol style="list-style-type: decimal">
+	<li>假设光标此时位于单词 <code>collection</code> 上。复制该单词：<code>yiw</code>。</li>
+	<li>移动光标至单词 <code>somethingInTheWay</code> 上，选中该单词：<code>viw</code>。</li>
+	<li>粘贴无名寄存器中的文本：<code>p</code>。</li>
+      </ol>
+      <blockquote><p>注意，方案三中的第 1 步操作结束后，无名寄存器和 0 号寄存器中的内容相同；但第 3 步操作结束后，0 号寄存器中的内容不变，但无名寄存器中的内容会被替换为刚才高亮选中的文本，因为我们其实是对这些文本进行了删除操作。所以如果此时还想粘贴单词 <code>collection</code>，必须使用 <code>&quot;0p</code>，否则粘贴的单词是 <code>somethingInTheWay</code>。</p></blockquote>
+      <p><strong>小技巧：</strong></p>
+      <p>使用 <code>gv</code> 可重选上一次选中的文本呢。</p>
+      <h2 id="查看寄存器中的内容">查看寄存器中的内容</h2>
+      <p><code>:reg</code></p>
+      <h2 id="有名寄存器">有名寄存器</h2>
+      <p>Vim 提供了一组以 26 个英文小写字母命名的有名寄存器，这意味着可以剪切、复制、粘贴多达 26 段文本。</p>
+      <pre><code>  &quot;[a-z]d{motion}
 
   &quot;[a-z]y{motion}
 
@@ -256,8 +258,16 @@ process(somethingInTheWay, target);</code></pre>
   &quot;+d{motion}
 
   &quot;+x</code></pre>
+
+    <p>注意，前提是在执行 <code>:version</code> 命令后，<code>clipboard</code> 条目前面是加号(<code>+</code>)。如果是减号，就需要安装下列软件：</p>
+
+    <pre><code>    sudo apt-get install vim vim-scripts vim-gtk vim-gnome</code></pre>
+
     <p><strong>主剪贴板</strong></p>
-    <p>注意：先使用 <code>:version</code> 命令，在输出中查找 <code>xterm_clipboard</code> 关键字，其前缀如果是减号 <code>-</code> 则表示不支持此功能。</p>
+    <p>注意：先使用 <code>:version</code> 命令，在输出中查找 <code>xterm_clipboard</code> 关键字，其前缀如果是减号 <code>-</code> 则表示不支持此功能，需要安装下列软件：</p>
+
+    <pre><code>    sudo apt-get install vim vim-scripts vim-gtk vim-gnome</code></pre>
+
     <p>X11 视窗系统支持一种被称为主剪贴板（primary）的剪贴板，保存着上次被高亮选中的文本，可以用鼠标中键粘贴出来。</p>
     <p>Vim 的星号 <code>*</code> 寄存器对应主剪贴板。</p>
     <pre><code>  &quot;*p
@@ -304,8 +314,8 @@ process(somethingInTheWay, target);</code></pre>
       <li><code>ww</code>，移动光标至字母 <code>f</code></li>
       <li><code>ve</code>，切换到可视模式，并高亮至单词 <code>fish</code> 的结尾</li>
       <li><code>p</code>，粘贴无名寄存器中刚刚删除的单词</li>
-      <li><code>m`</code>，返回刚才标记的位置</li>
-      <li><code>P</code>，大写的 <code>P</code>，粘贴，将无名寄存器中刚才替换掉的单词</li>
+      <li><code>`m</code>，返回刚才标记的位置</li>
+      <li>大写的 <code>P</code>，粘贴无名寄存器中刚才替换掉的单词</li>
     </ul>
     <h2 id="p-与-gpp-与-gp">p 与 gp，P 与 gP</h2>
     <p><code>p</code> 和 <code>P</code> 后，光标会位于所粘贴的全部文本的第一行第一个字母，<code>gp</code> 与 <code>gP</code> 后，光标会位于所粘贴的全部文本的下一行，所以 <code>gp</code> 和 <code>gP</code> 可能更实用。</p>

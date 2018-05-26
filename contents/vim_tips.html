@@ -10,37 +10,53 @@
       <h1 id="">Vim Tips</h1>
 
       <p><strong>Exchange two letters in normal mode</strong></p>
-      <pre><code>xp</code></pre>
+      <pre><code>    xp</code></pre>
 
       <p><strong>Exchange two lines in normal mode</strong></p>
-      <pre><code>ddp</code></pre>
+      <pre><code>    ddp</code></pre>
 
       <p><strong>Insert an empty line in normal mode</strong></p>
-      <ol style="list-style-type: decimal">
+
+      <ul>
 	<li>Move the cursor to an empty line, <code>yy</code>.</li>
 	<li>Move the cursor to the target postion, <code>p</code>.</li>
-      </ol>
+      </ul>
 
-      <p><strong>INSERT the start/end of the line</strong></p>
-      <p><code>I / A</code></p>
+      <p><strong>INSERT at the start/end of the line</strong></p>
+      <pre><code>    I / A</code></pre>
       
 
       <p><strong>列编辑</strong></p>
       <p>删除</p>
-      <ol style="list-style-type: decimal">
+
+      <ul>
 	<li>光标定位到开始操作的地方</li>
 	<li><code>Ctrl + v</code> 进入“可视块”模式</li>
 	<li>选取要操作的列</li>
 	<li>用 <code>d</code> 删除</li>
-      </ol>
+      </ul>
       <p>插入: 假设我们在每一行前都插入<code>#</code>：</p>
-      <ol style="list-style-type: decimal">
+
+      <ul>
 	<li>光标定位到开始操作的地方</li>
 	<li><code>Ctrl + v</code> 进入“可视块”模式</li>
 	<li>选取要操作的列</li>
-	<li><code>Shift + I</code></li>
+	<li><code>大写 I</code></li>
 	<li>输入要插入的内容。</li>
 	<li><code>&lt;ESC&gt;</code> 按两次，会在每行的选定区域出现插入的内容</li>
-      </ol>
+      </ul>
+
+      <p><strong>查找当前行中光标位置后/前第一个空格：</strong></p>
+      <pre>    <code>f␣</code> / <code>F␣</code></pre>
+
+      <p><strong>调换当前字符和它的下一个字符</strong></p>
+      <pre>    <code>xp</code></pre>
+
+      <p><strong>调换当前行和它的下一行</strong></p>
+      <pre>    <code>ddp</code></pre>
+
+      <p><strong>删除本行中的所有 <code>&lt;pre&gt;</code> 和 <code>&lt;/pre&gt;</code>，删除需要提示</strong></p>
+      <pre>    <code>:s/&lt;\/?pre&gt;//gc</code></pre>
+
   </body>
 </html>
