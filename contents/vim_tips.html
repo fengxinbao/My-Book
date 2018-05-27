@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title></title>
@@ -49,13 +50,16 @@
       <p><strong>查找当前行中光标位置后/前第一个空格：</strong></p>
       <pre>    <code>f␣</code> / <code>F␣</code></pre>
 
+      <p><strong>输入二合字符 ␣：</strong></p>
+      <pre>    <code>输入 C-k，这时光标下出现问号 ?，然后输入 Vs 即可。</code></pre>
+
       <p><strong>调换当前字符和它的下一个字符</strong></p>
       <pre>    <code>xp</code></pre>
 
       <p><strong>调换当前行和它的下一行</strong></p>
       <pre>    <code>ddp</code></pre>
 
-      <p><strong>删除本行中的所有 <code>&lt;pre&gt;</code> 和 <code>&lt;/pre&gt;</code>，删除需要提示</strong></p>
+      <p><strong>删除本行中的所有 <code>&lt;pre&gt;</code> 和 <code>&lt;/pre&gt;</code>，删除前需要提示</strong></p>
       <pre>    <code>:s/&lt;\/?pre&gt;//gc</code></pre>
 
   </body>

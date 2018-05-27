@@ -54,27 +54,22 @@ var foobar = foo + bar;</code></pre>
       </ul>
 
       <h2 id="问题-3关于重复及回退">问题 3：关于重复及回退</h2>
-      <p>如何在行内查找下一个字符？如何重复它？如何回退它？</p>
-      <pre><code>f{char}    /    t{char} ; ,</code></pre>
-      <p>如何在行内查找上一个字符？如何重复它？如何回退它？</p>
-      <pre><code>F{char}    /    T{char} ; ,</code></pre>
-      <p>如何在文档中查找下一匹配项？如何重复它？如何回退它？</p>
-      <pre><code>/pattern    n    N</code></pre>
-      <p>如何在文档中查找上一匹配项？如何重复它？如何回退它？</p>
-      <pre><code>?pattern    n    N</code></pre>
-      <p>如何替换<strong>当前行</strong>文本？如何重复它？如何回退它？</p>
+      <pre><code>f{char} / t{char}    ;    ,</code></pre>
+      <pre><code>F{char} / T{char}    ;    ,</code></pre>
+      <pre><code>/pattern             n    N</code></pre>
+      <pre><code>?pattern             n    N</code></pre>
       <pre><code>:s/target/replacement    &amp;    u</code></pre>
 
       <h2 id="问题-4如何重复查找指定文本并手动替换">问题 4：如何重复查找指定文本并手动替换</h2>
       <p>当然可以执行全局替换：</p>
-      <pre><code>:%s/pattern/replacement</code></pre>
+      <pre><code>:%s/pattern/replacement/g</code></pre>
       <p>但有些时候需要在替换前进行确认是否执行替换。例如以下文本：</p>
       <pre><code>We&#39;re waiting for content before the site can go live.
 If you are content with this, let&#39;s go ahead with it.
 We&#39;ll launch as soon as we have the content.</code></pre>
       <p>我们想把 content 用 copy 代替，但 content 还有 happy 的含义，所以不是所有 content 都能替换为 copy，替换前需要确认。</p>
       <p><strong>解答：</strong></p>
-      <ol style="list-style-type: decimal">
+      <ul>
 	<li>使用 <code>/pattern</code> 或 <code>*</code> 来查找目标单词 content.</li>
 	<li>此时光标位于单词 content 的首字母 c 的位置。</li>
 	<li><code>cw</code>（删除光标位置到单词结尾之间的字符，并进入插入模式）</li>
@@ -82,7 +77,7 @@ We&#39;ll launch as soon as we have the content.</code></pre>
 	<li><code>&lt;Esc&gt;</code></li>
 	<li><code>n</code>（查找下一个 content）</li>
 	<li><code>.</code>（重复上一次修改操作，即步骤 2 - 4，不含步骤 1）</li>
-      </ol>
+      </ul>
 
       <h2 id="问题-5以上技巧的共同点是什么">问题 5：以上技巧的共同点是什么？</h2>
       <p>只需按一次键就能把光标移动到下一目标上。用一键移动，另一键执行。</p>
@@ -147,7 +142,7 @@ We&#39;ll launch as soon as we have the content.</code></pre>
 	<li><code>c</code> 修改</li>
 	<li><code>d</code> 删除</li>
 	<li><code>y</code> 复制到寄存器</li>
-	<li><code>g\~</code> 反转大小写</li>
+	<li><code>g~</code> 反转大小写</li>
 	<li><code>gu</code> 转换为小写</li>
 	<li><code>gU</code> 转换为大写</li>
 	<li><code>&gt;</code> 增加缩进</li>
@@ -155,7 +150,7 @@ We&#39;ll launch as soon as we have the content.</code></pre>
 	<li><code>=</code> 自动缩进</li>
 	<li><code>!</code> 使用外部程序过滤{motion}所跨越的行</li>
       </ul>
-      <p>Vim 语法有一条额外规则，即当一个操作符命令被连续调用两次时，它会作用于当前行。所以 <code>dd</code> 是删除当前行，<code>&gt;&gt;</code> 缩进当前行，<code>gUgU</code> 是当前行变大写，但也可以使用简化版的 <code>gUU</code>，同理，<code>g\~\~</code> 改变当前行大小写。</p>
+      <p>Vim 语法有一条额外规则，即当一个操作符命令被连续调用两次时，它会作用于当前行。所以 <code>dd</code> 是删除当前行，<code>&gt;&gt;</code> 缩进当前行，<code>gUgU</code> 是当前行变大写，但也可以使用简化版的 <code>gUU</code>，同理，<code>g~~</code> 改变当前行大小写。</p>
       <p>整篇文档变大写：<code>ggguG</code></p>
       <ul>
 	<li><code>gg</code>：光标定位至文档开头第一个字符</li>
@@ -173,9 +168,16 @@ We&#39;ll launch as soon as we have the content.</code></pre>
 	<li><code>&lt;C-u&gt;</code> 删除至行首</li>
       </ul>
       <p>这些命令不是 Vim 插入模式独有的，在 bash shell 中也可以使用它们。</p>
+
       <h2 id="技巧-14-插入-普通模式">技巧 14 插入-普通模式</h2>
-      <p><code>&lt;C-o&gt;</code> 可以带你进入“插入-普通模式”，在这个模式中，你可以执行一个普通模式的命令（不可是 Ctrl 组合键，可以是 <code>dd</code>、<code>daw</code>、<code>3k</code>、<code>j</code>、<code>yy</code>、<code>ZZ</code> 纯字母组合的命令），然后 Vim 会立刻返回到插入模式。</p>
-      <p><code>&lt;C-o&gt;zz</code> 当所编辑的行位于屏幕顶部或底部时，可以使用 <code>&lt;C-o&gt;</code>，然后结合 <code>zz</code> 命令，使当前行移动至屏幕中心，然后继续编辑。免去了退出返回普通模式，再进入插入模式的麻烦。</p>
+
+      <p><code>&lt;C-o&gt;</code></p>
+      
+      <p>可以带你进入“插入-普通模式”，在这个模式中，你可以执行一个普通模式的命令（不可是 Ctrl 组合键，可以是 <code>dd</code>、<code>daw</code>、<code>3k</code>、<code>j</code>、<code>yy</code>、<code>ZZ</code> 纯字母组合的命令），然后 Vim 会立刻返回到插入模式。</p>
+
+      <p><code>&lt;C-o&gt;zz</code></p>
+      
+      <p>当所编辑的行位于屏幕顶部或底部时，可以使用 <code>&lt;C-o&gt;</code>，然后结合 <code>zz</code> 命令，使当前行移动至屏幕中心，然后继续编辑。免去了退出返回普通模式，再进入插入模式的麻烦。</p>
 
       <h2 id="技巧-15-不离开插入模式粘贴寄存器中的文本">技巧 15 不离开插入模式，粘贴寄存器中的文本</h2>
       <p>下面是一段尚未完成的文本：</p>
@@ -190,12 +192,20 @@ Read Drew Neil’s</code></pre>
       </ul>
       <p>得到：</p>
       <pre><code>Practical Vim, by Drew Neil
-Read Drew Neil’s *Practical Vim.*</code></pre>
+Read Drew Neil’s Practical Vim.</code></pre>
+
+
       <h1 id="第-10-章-复制与粘贴">第 10 章 复制与粘贴</h1>
       <p>Vim 操作的不是剪贴板，而是寄存器。</p>
-      <p>可以使用 <code>&quot;{register}</code> 的方式指定要使用的寄存器，若不指定，Vim 使用默认的“无名寄存器”。</p>
-      <p><code>d</code> 命令会把指定文本复制到寄存器，然后再从文档中删除。</p>
+      <p>可以使用一个双引号 `"` 加寄存器名称的方式：</P>
+      
+       <pre><code>&quot;{register}</code></pre> 
+
+       <p>指定要使用的寄存器，若不指定，Vim 使用默认的“无名寄存器”，即 `""`。</p>
+      <p><code>d</code> 命令先会把指定文本复制到寄存器，然后再从文档中删除。</p>
       <p>Vim 中真正的删除操作，即只删除文本而不把文本复制到寄存器，是使用名为“黑洞”的寄存器。使用下划线 <code>_</code> 引用黑洞寄存器。如，<code>_d{motion}</code> 会执行纯粹的删除操作。当你只想删除文本却不想覆盖寄存器时，此命令很管用。</p>
+
+      <p><strong>寄存器的使用</strong>：先输入一个双引号 `"` 表示要使用寄存器，然后指定寄存器名字，然后再发出复制、剪切或粘贴命令。举例如下：</p>
     <ul>
       <li>把当前单词复制到寄存器 <code>a</code> 中：<code>&quot;ayiw</code></li>
       <li>把当前整行文本剪切至寄存器 <code>b</code> 中：<code>&quot;bdd</code></li>
@@ -203,12 +213,11 @@ Read Drew Neil’s *Practical Vim.*</code></pre>
       <li>粘贴寄存器 <code>b</code> 中的文本：<code>&quot;bp</code></li>
     </ul>
       <h2 id="无名寄存器">无名寄存器</h2>
-      <p>用一个双引号 <code>&quot;</code> 表示无名寄存器。</p>
+      <p>用一个双引号 <code>&quot;</code> 表示无名寄存器，用两个双引号 `""` 表示使用它。</p>
       <p>Vim 默认使用无名寄存器，所以 <code>p</code> 等同于 <code>&quot;&quot;p</code> 命令。</p>
-      <p>无名寄存器总是缺省的。<code>x</code>、<code>s</code>、<code>d{motion}</code>、<code>c{motion}</code> 和 <code>y{motion}</code> 都会覆盖无名寄存器中的内容。可以通过加 <code>&quot;{register}</code> 前缀来指定使用其他寄存器。</p>
+      <p>无名寄存器总是缺省的，所以 <code>x</code>、<code>s</code>、<code>d{motion}</code>、<code>c{motion}</code> 和 <code>y{motion}</code> 都会覆盖无名寄存器中的内容。</p>
       <h2 id="复制专用寄存器">复制专用寄存器</h2>
-      <p><code>0</code> 号寄存器：<code>&quot;0</code>。</p>
-      <p>仅当使用 <code>y{motion}</code> 时，<code>0</code> 号寄存器中的内容才会被覆盖，<strong>此时，无名寄存器和 0 号寄存器中的内容相同。</strong> 可以使用 <code>:reg</code> 查看这两个寄存器中的内容。</p>
+      <p>仅当使用 <code>y{motion}</code> 时，<code>0</code> 号寄存器中的内容才会被覆盖，<strong>此时，无名寄存器和 0 号寄存器中的内容相同，</strong> 因为 `y{motion}` 同时也覆盖了无名寄存器。可以使用 <code>:reg</code> 验证这两个寄存器中的内容。</p>
       <p><code>x</code>、<code>s</code>、<code>c{motion}</code> 和 <code>d{motion}</code> 只会覆盖无名寄存器，不会覆盖 <code>0</code> 号寄存器。</p>
       <p>练习：将下面代码中的 <code>somethingInTheWay</code> 改为 <code>collection</code>。</p>
       <pre><code>    collection = getCollection();
